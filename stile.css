@@ -343,11 +343,14 @@ td strong{font-weight:700}
 .allerta__cima h3{font-size:1.4rem}
 .allerta__icona{font-size:1.9rem;line-height:1}
 .doppia-colonna{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:14px}
-.colonna-fare{background:var(--bianco);border:var(--bordo-sottile);padding:15px}
+.colonna-fare{background:var(--bianco);color:var(--nero);border:var(--bordo-sottile);padding:15px}
 .colonna-mai{background:var(--nero);color:var(--bianco);border:var(--bordo-sottile);padding:15px}
-.colonna-fare h4,.colonna-mai h4{font-size:1rem;margin-bottom:9px;letter-spacing:0.05em}
+.colonna-fare h4{font-size:1rem;margin-bottom:9px;letter-spacing:0.05em;color:var(--nero)}
+.colonna-mai h4{font-size:1rem;margin-bottom:9px;letter-spacing:0.05em;color:var(--bianco)}
 .colonna-fare ul,.colonna-mai ul{margin:0;padding-left:20px}
 .colonna-fare li,.colonna-mai li{margin-bottom:7px;font-size:0.94rem}
+.colonna-fare a{color:var(--blu-cupo)}
+.colonna-mai a{color:var(--giallo)}
 
 .emergenza{
   background:var(--blu);color:var(--bianco);border:6px solid var(--nero);
