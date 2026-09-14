@@ -36,47 +36,51 @@ python3 costruisci.py
 Barra di navigazione, barra di condivisione, piè di pagina e schede di anteprima sono definiti una
 volta sola nel generatore, così restano identici su tutte le pagine.
 
-## Come si mette in linea
+## Stato della pubblicazione
 
-Il sito è statico: sei file HTML, un foglio di stile, uno script e un'immagine vettoriale.
-Non serve alcun programma sul server, nessun database, nessuna compilazione.
-Basta copiare il contenuto di questa cartella nella radice del sito.
+Il codice è **online** nel repository dedicato `GuidoCostalonga/ginopizza`, ramo `main`:
+https://github.com/GuidoCostalonga/ginopizza
 
-Le tre strade possibili, in ordine di comodità:
+Restano due passaggi che richiedono un accesso non disponibile in automatico.
 
-1. **Pagine GitHub.** È già la strada usata per costalonga.org e funziona. Quattro passi:
+### 1. Attivare le Pagine GitHub
 
-   1. Creare un repository pubblico vuoto, per esempio `GuidoCostalonga/ginopizza`,
-      senza file iniziali.
-   2. Caricare il contenuto di questa cartella nella radice del repository, sul ramo `main`.
-   3. Nelle impostazioni del repository, sezione Pages, attivare la pubblicazione dal ramo `main`,
-      cartella radice, e impostare il dominio personalizzato su `ginopizza.it`.
-      Il file `CNAME` è già presente e contiene il dominio.
-   4. Presso il gestore del dominio, sostituire il record che punta a 146.59.63.161 con i record
-      delle Pagine GitHub qui sotto, e aggiungere il sottodominio `www`.
+Impostazioni del repository, sezione **Pages**: sorgente **Deploy from a branch**,
+ramo `main`, cartella `/ (root)`, poi Salva. Il file `CNAME` è già nel repository e
+contiene `ginopizza.it`, quindi il dominio personalizzato viene riconosciuto da solo.
 
-   Record da impostare sul dominio `ginopizza.it` (verificati il 14 settembre 2026 risolvendo
-   costalonga.org, che è già pubblicato con le Pagine GitHub):
+Dopo qualche minuto il sito risponde su https://guidocostalonga.github.io/ginopizza/
 
-   | Tipo | Nome | Valore |
-   |---|---|---|
-   | A | @ | 185.199.108.153 |
-   | A | @ | 185.199.109.153 |
-   | A | @ | 185.199.110.153 |
-   | A | @ | 185.199.111.153 |
-   | AAAA | @ | 2606:50c0:8000::153 |
-   | AAAA | @ | 2606:50c0:8001::153 |
-   | AAAA | @ | 2606:50c0:8002::153 |
-   | AAAA | @ | 2606:50c0:8003::153 |
-   | CNAME | www | guidocostalonga.github.io. |
+### 2. Puntare il dominio
 
-   Dopo la propagazione, attivare nelle impostazioni delle Pagine la voce che impone il
-   collegamento cifrato.
-2. **Trasferimento diretto sull'attuale servizio.** Il dominio `ginopizza.it` risolve
-   sull'indirizzo 146.59.63.161 e risponde con un errore 503. Servono le credenziali FTP o SFTP
-   di quel servizio per caricare i file nella cartella pubblica.
-3. **Servizio di pubblicazione statica** (Netlify, Vercel, Cloudflare Pages). Serve un accesso
-   all'account e il collegamento del dominio.
+Presso il gestore del dominio, sostituire il record che punta a 146.59.63.161 con i
+record delle Pagine GitHub, e aggiungere il sottodominio `www`.
+
+Record verificati il 14 settembre 2026 risolvendo costalonga.org, che è già pubblicato
+con le Pagine GitHub:
+
+| Tipo | Nome | Valore |
+|---|---|---|
+| A | @ | 185.199.108.153 |
+| A | @ | 185.199.109.153 |
+| A | @ | 185.199.110.153 |
+| A | @ | 185.199.111.153 |
+| AAAA | @ | 2606:50c0:8000::153 |
+| AAAA | @ | 2606:50c0:8001::153 |
+| AAAA | @ | 2606:50c0:8002::153 |
+| AAAA | @ | 2606:50c0:8003::153 |
+| CNAME | www | guidocostalonga.github.io. |
+
+A propagazione avvenuta, attivare nelle impostazioni delle Pagine la voce che impone il
+collegamento cifrato.
+
+### Strade alternative
+
+Il sito è statico: cinque file HTML, un foglio di stile, uno script e un'immagine
+vettoriale. Non serve alcun programma sul server, nessun database, nessuna compilazione.
+Basta copiare il contenuto della cartella nella radice del sito. Quindi restano possibili
+anche il trasferimento diretto per FTP o SFTP sul servizio attuale, che risponde
+sull'indirizzo 146.59.63.161, oppure un servizio di pubblicazione statica.
 
 ## Regola sui dati
 
