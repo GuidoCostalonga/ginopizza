@@ -1067,10 +1067,10 @@ CORPO_SICUREZZA = """
     <div class="griglia griglia--2">
 """ + scheda("controllo-di-vicinato.html", "01", "Protocollo con la Prefettura", "&#128101;",
              "Il controllo di vicinato",
-             "Cittadini che osservano la propria via e segnalano alla Polizia Locale tramite un referente. "
-             "Nessuna ronda, nessun pattugliamento: &egrave; scritto nero su bianco.",
-             ("Che cosa si segnala, voce per voce",
-              "Come si costituisce un gruppo",
+             "Un gruppo di volontari chiede alla Polizia Locale di aderire, nomina un coordinatore e "
+             "segnala quello che stona. Nessuna ronda, nessun pattugliamento: &egrave; scritto nero su bianco.",
+             ("Come si fa domanda e si costituisce un gruppo",
+              "Che cosa si segnala, voce per voce",
               "I compiti del coordinatore")) \
   + scheda("vademecum-antitruffa.html", "02", "Ministero dell'Interno, Polizia Postale, Carabinieri",
            "&#128680;",
@@ -1114,9 +1114,9 @@ CORPO_VICINATO = """
     <span class="testata__occhiello">Sicurezza &middot; Protocollo con la Prefettura di Pordenone</span>
     <h1><span aria-hidden="true">&#128101;</span> Il controllo<br>di vicinato</h1>
     <p class="testata__sommario">Il Comune ha sottoscritto il protocollo d'intesa con la Prefettura di
-       Pordenone. &Egrave; una forma di <strong>partecipazione passiva</strong>: i residenti monitorano la
-       propria zona e segnalano, tramite il referente, alle forze di Polizia statali e locali.
-       Nient'altro.</p>
+       Pordenone. Un gruppo di volontari chiede alla Polizia Locale di aderire, nomina un coordinatore e da
+       l&igrave; segnala quello che stona. &Egrave; una forma di <strong>partecipazione
+       passiva</strong>: si guarda e si riferisce, nient'altro.</p>
   </div>
 </header>
 
@@ -1128,8 +1128,12 @@ CORPO_VICINATO = """
       <div class="colonna-fare">
         <h4><span aria-hidden="true">&#9989;</span> Che cos'&egrave;</h4>
         <ul>
-          <li>Auto-organizzazione tra vicini per tenere d'occhio l'area intorno alle proprie abitazioni.</li>
-          <li>Un canale ordinato di segnalazione che passa dal referente di zona alle forze di Polizia.</li>
+          <li><strong>Un gruppo di cittadini volontari che fa domanda alla Polizia Locale</strong> per
+              aderire al progetto. Non ci si arruola da soli: le adesioni le vaglia il Comune.</li>
+          <li>Una volta costituito, il gruppo <strong>nomina un proprio coordinatore</strong>, che &egrave;
+              l'unico tramite con la Polizia Locale e con le forze dell'ordine.</li>
+          <li>Da l&igrave; in avanti, attenzione consapevole alla propria via e un canale ordinato di
+              segnalazione, che passa sempre dal coordinatore.</li>
           <li>Cartelli che comunicano che il vicinato &egrave; attento a quello che avviene nella zona:
               i molti occhi dei residenti sono un deterrente contro i furti.</li>
           <li>Reciproca assistenza fra vicini: sorveglianza delle case, attenzione ai vicini anziani e soli,
