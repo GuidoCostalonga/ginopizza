@@ -15,6 +15,66 @@ VOCI = [
     ("viabilita.html",            "\U0001F697", "Viabilità e parcheggi rosa",  "In corso"),
 ]
 
+# Nome breve di ogni pagina e sua pagina madre: serve alle briciole di
+# navigazione e alla mappa del sito, che si costruiscono da soli.
+NOMI = {
+    "index.html":                    ("Home", None),
+    "polizia-rurale.html":           ("Polizia rurale", None),
+    "polizia-rurale-diffida.html":   ("La diffida amministrativa", "polizia-rurale.html"),
+    "polizia-rurale-obblighi.html":  ("Gli obblighi", "polizia-rurale.html"),
+    "polizia-rurale-fuochi.html":    ("I fuochi nei fondi", "polizia-rurale.html"),
+    "polizia-rurale-distanze.html":  ("Le distanze", "polizia-rurale.html"),
+    "polizia-rurale-novita.html":    ("Le novità del testo", "polizia-rurale.html"),
+    "sicurezza-territorio.html":     ("Sicurezza", None),
+    "controllo-di-vicinato.html":    ("Controllo di vicinato", "sicurezza-territorio.html"),
+    "truffe-alla-porta.html":        ("Truffe alla porta di casa", "sicurezza-territorio.html"),
+    "truffe-fuori-casa.html":        ("Truffe fuori casa", "sicurezza-territorio.html"),
+    "truffe-cosa-fare.html":         ("Segnali e cosa fare", "sicurezza-territorio.html"),
+    "viabilita.html":                ("Viabilità", None),
+    "permesso-rosa.html":            ("Il permesso rosa", "viabilita.html"),
+    "controlli-velocita.html":       ("I controlli di velocità", "viabilita.html"),
+    "contatti.html":                 ("Ricevimento e contatti", None),
+}
+
+
+def briciole(file_html):
+    """Percorso di navigazione, mostrato solo nelle pagine figlie."""
+    nome, madre = NOMI.get(file_html, (None, None))
+    if not madre:
+        return ""
+    nome_madre = NOMI[madre][0]
+    return """<nav class="briciole non-stampare" aria-label="Percorso">
+  <div class="briciole__interno">
+    <a href="index.html">Home</a>
+    <span aria-hidden="true">&rsaquo;</span>
+    <a href="{m}">{nm}</a>
+    <span aria-hidden="true">&rsaquo;</span>
+    <span class="briciole__qui" aria-current="page">{n}</span>
+  </div>
+</nav>""".format(m=madre, nm=nome_madre, n=nome)
+
+
+def scheda(file_html, numero, occhiello, emoji, titolo, riassunto, punti=()):
+    """Riquadro dell'indice: titolo, riassunto e, se serve, tre righe di che cosa c'è dentro."""
+    elenco = ""
+    if punti:
+        elenco = "<ul>" + "".join("<li>%s</li>" % p for p in punti) + "</ul>"
+    return """      <a class="manifesto" href="{f}">
+        <div class="manifesto__cima">
+          <span class="manifesto__numero">{n}</span>
+          <span class="manifesto__occhiello">{o}</span>
+          <span class="manifesto__emoji" aria-hidden="true">{e}</span>
+        </div>
+        <div class="manifesto__corpo">
+          <h3>{t}</h3>
+          <p>{r}</p>
+          {el}
+          <span class="manifesto__vai">Apri la scheda &rarr;</span>
+        </div>
+      </a>
+""".format(f=file_html, n=numero, o=occhiello, e=emoji, t=titolo, r=riassunto, el=elenco)
+
+
 NASTRO = ("APPROVATO DALL'ASSESSORE ★ IN VIGORE SUBITO ★ POCHE PIZZE ★ "
           "ZERO ANANAS, SOLO FATTI ★ DELIBERE, NON CHIACCHIERE ★ ")
 
@@ -156,13 +216,15 @@ def pagina(file_html, titolo_scheda, descrizione, corpo, emoji_og="\U0001F355"):
 </head>
 <body>
 {barra}
+{bric}
 {cond}
 {corpo}
 {chiusura}
 </body>
 </html>
 """.format(ts=titolo_scheda, d=descrizione, u=url, s=SITO,
-           barra=barra(file_html), cond=condivisione(titolo_scheda, file_html),
+           barra=barra(file_html), bric=briciole(file_html),
+           cond=condivisione(titolo_scheda, file_html),
            corpo=corpo, chiusura=CHIUSURA)
 
 
@@ -329,8 +391,21 @@ scrivi("index.html", pagina(
     CORPO_INDEX))
 
 # ============================================================
-# 2. polizia-rurale.html
+# 2. Polizia rurale: indice e schede
 # ============================================================
+
+def ritorno(file_html, testo):
+    return """
+<section class="sezione">
+  <div class="contenitore">
+    <a class="ritorno" href="{f}"><span aria-hidden="true">&larr;</span> {t}</a>
+  </div>
+</section>""".format(f=file_html, t=testo)
+
+
+RITORNO_RURALE = ritorno("polizia-rurale.html", "Torna al regolamento di polizia rurale")
+
+# ---------- Indice ----------
 CORPO_RURALE = """
 <main>
 <header class="testata">
@@ -386,15 +461,96 @@ CORPO_RURALE = """
   </div>
 </section>
 
-<section class="sezione sezione--blu">
+<section class="sezione sezione--scura">
   <div class="contenitore">
-    <span class="testata__occhiello" style="background:#000;color:#facc15">Articolo 4 &middot; La novit&agrave;
-      che cambia il metodo</span>
-    <h2 class="sezione__titolo" style="margin-top:14px">Prima si tende la mano. Poi, semmai, si sanziona.</h2>
-    <p class="sezione__sotto">Si chiama <strong>diffida amministrativa</strong>: davanti a molte violazioni
-       il primo passo non &egrave; pi&ugrave; il verbale, ma un invito a sistemare la situazione entro un
-       tempo ragionevole. La sanzione resta ferma per chi non vuole adeguarsi.</p>
+    <h2 class="sezione__titolo" style="color:#facc15">Che cosa c'&egrave; dentro</h2>
+    <p class="sezione__sotto">Cinque schede. Ognuna sta in piedi da sola e ha il suo collegamento,
+       cos&igrave; puoi mandarne una sola a chi serve.</p>
+    <div class="griglia griglia--2">
+""" + scheda("polizia-rurale-diffida.html", "01", "Articolo 4", "&#129309;",
+             "La diffida amministrativa",
+             "La novit&agrave; che cambia il metodo: davanti a molte violazioni il primo passo non &egrave; "
+             "il verbale, ma un invito a sistemare entro dieci giorni.",
+             ("Vale una volta sola, non si proroga",
+              "Se non si ottempera: da 25 a 150 euro in pi&ugrave;",
+              "Perch&eacute; &egrave; un cambiamento culturale")) \
+  + scheda("polizia-rurale-obblighi.html", "02", "Gli articoli che toccano tutti", "&#128221;",
+           "Gli obblighi, articolo per articolo",
+           "Sfalci, fossi, siepi, deflusso delle acque e arature: chi deve fare che cosa, entro quando "
+           "e quanto costa non farlo.",
+           ("Tre sfalci l'anno: 15 maggio, 30 luglio, 30 settembre",
+            "Rami sotto i cinque metri sulla carreggiata",
+            "Il metodo in quattro passaggi")) \
+  + scheda("polizia-rurale-fuochi.html", "03", "Articolo 14", "&#128293;",
+           "I fuochi nei fondi",
+           "L'articolo su cui arrivano pi&ugrave; segnalazioni, e quello dove sbagliare costa caro. "
+           "Nel centro abitato non si accende, fuori si pu&ograve; ma con regole precise.",
+           ("Solo da ottobre a marzo, dalle 7 alle 20",
+            "Cento metri da case, strade e boschi",
+            "Mai sopra il grado 3 della scala Beaufort")) \
+  + scheda("polizia-rurale-distanze.html", "04", "Articoli 22, 34, 39, 49 e 57", "&#128207;",
+           "Le distanze, in tabella",
+           "Tredici misure raccolte in un posto solo, ricavate dagli articoli e dalle nove tavole "
+           "grafiche allegate al regolamento.",
+           ("Fossi, alberi, siepi e arbusti dal confine",
+            "Apiari, ricoveri, vigneti e frutteti",
+            "La finestra per tagliare: 15 ottobre, 15 aprile")) \
+  + scheda("polizia-rurale-novita.html", "05", "Come &egrave; nato", "&#127968;",
+           "Le altre novit&agrave; e la storia del testo",
+           "Il patto di buon vicinato sui nuovi impianti, i prati stabili resi pi&ugrave; semplici, "
+           "e un percorso cominciato da un'amministrazione e finito da un'altra.",
+           ("Siepi, distanze e compensazioni",
+            "Niente obbligo di sfalcio sui prati stabili",
+            "Approvato all'unanimit&agrave; da due commissioni")) + """    </div>
+  </div>
+</section>
 
+<section class="sezione">
+  <div class="contenitore">
+    <div class="riquadro">
+      <h3>Segnala un punto critico</h3>
+      <p>Un fosso ostruito, un ramo che sporge su una curva cieca, un cumulo abbandonato lungo una strada
+         di campagna. Se lo vedi, dillo: la segnalazione arriva a chi pu&ograve; intervenire.</p>
+      <p>Indica il punto nel modo pi&ugrave; preciso possibile, cio&egrave; via, altezza civico o
+         riferimento visibile, e se puoi allega una fotografia.</p>
+      <div class="fila-bottoni">
+        <a class="bottone bottone--blu" href="https://wa.me/393283692227" target="_blank" rel="noopener">
+          Segnala su WhatsApp</a>
+        <a class="bottone bottone--bianco" href="contatti.html">Tutti i recapiti</a>
+        <a class="bottone bottone--bianco" href="https://comune.roveredoinpiano.pn.it/"
+           target="_blank" rel="noopener">Albo pretorio del Comune</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+"""
+
+scrivi("polizia-rurale.html", pagina(
+    "polizia-rurale.html",
+    "Regolamento di polizia rurale | GinoPizza.it",
+    "Il regolamento di polizia rurale di Roveredo in Piano, in vigore dal 13 settembre 2026: 84 articoli "
+    "approvati all'unanimità il 22 giugno 2026. Diffida amministrativa, obblighi, fuochi, distanze.",
+    CORPO_RURALE))
+
+
+# ---------- 2.1 La diffida amministrativa ----------
+CORPO_DIFFIDA = """
+<main>
+<header class="testata testata--nera">
+  <div class="contenitore">
+    <span class="testata__occhiello">Polizia rurale &middot; Articolo 4</span>
+    <h1><span aria-hidden="true">&#129309;</span> La diffida<br>amministrativa</h1>
+    <p class="testata__sommario">Prima si tende la mano. Poi, semmai, si sanziona. Davanti a molte
+       violazioni il primo passo non &egrave; pi&ugrave; il verbale, ma un invito a sistemare la situazione
+       entro un tempo ragionevole.</p>
+  </div>
+</header>
+
+""" + nastro("nastro--blu") + """
+
+<section class="sezione">
+  <div class="contenitore">
     <div class="riquadro">
       <h3>Come funziona, in concreto</h3>
       <ul class="elenco-timbri">
@@ -408,6 +564,10 @@ CORPO_RURALE = """
           <div><strong>Non &egrave; rinnovabile n&eacute; prorogabile</strong>, e non &egrave; ammessa
           quando il trasgressore &egrave; gi&agrave; stato diffidato per la stessa violazione. Vale una
           volta sola: la seconda volta si va dritti al verbale.</div></li>
+        <li><span class="icona" aria-hidden="true">&#128101;</span>
+          <div><strong>Se il trasgressore non &egrave; presente</strong>, la diffida va notificata
+          all'obbligato in solido ai sensi della legge 689 del 1981. Se i proprietari interessati sono
+          pi&ugrave; di uno, basta notificarla a un solo obbligato in solido.</div></li>
         <li><span class="icona" aria-hidden="true">&#9878;</span>
           <div><strong>Se non si ottempera</strong> si redige il verbale di accertamento e, oltre alla
           sanzione prevista per l'articolo violato, scatta un'ulteriore somma <strong>da 25 euro a
@@ -424,16 +584,47 @@ CORPO_RURALE = """
       <p style="font-size:.9rem"><strong>Guido Costalonga</strong>, assessore alla Sicurezza,
          comunicato del 23 giugno 2026.</p>
     </div>
+
+    <div class="riquadro riquadro--nero">
+      <h3>Su quali articoli si applica</h3>
+      <p>Il regolamento richiama espressamente la diffida per lo sfalcio dei terreni (articolo 7), la
+         gestione di fossi e canali privati (articolo 40), la manutenzione dei fossi a bordo strada
+         (articolo 44), le siepi e gli alberi che si protendono sulle strade (articolo 48), il deflusso
+         delle acque meteoriche dalle case rurali (articolo 27) e le misure contro la proliferazione dei
+         colombi (articolo 21).</p>
+      <p><a href="polizia-rurale-obblighi.html">Vai alla tabella degli obblighi &rarr;</a></p>
+    </div>
   </div>
 </section>
+""" + RITORNO_RURALE + """
+</main>
+"""
+
+scrivi("polizia-rurale-diffida.html", pagina(
+    "polizia-rurale-diffida.html",
+    "La diffida amministrativa | GinoPizza.it",
+    "L'articolo 4 del regolamento di polizia rurale di Roveredo in Piano: dieci giorni per sanare, una "
+    "volta sola, e che cosa succede a chi non ottempera.",
+    CORPO_DIFFIDA))
+
+
+# ---------- 2.2 Gli obblighi ----------
+CORPO_OBBLIGHI = """
+<main>
+<header class="testata">
+  <div class="contenitore">
+    <span class="testata__occhiello">Polizia rurale &middot; Gli articoli che toccano tutti</span>
+    <h1><span aria-hidden="true">&#128221;</span> Gli obblighi,<br>articolo per articolo</h1>
+    <p class="testata__sommario">Sintesi divulgativa degli articoli che riguardano il maggior numero di
+       persone. Il testo che fa fede &egrave; il regolamento approvato e pubblicato all'albo pretorio.
+       Gli importi sono minimo, massimo e pagamento in misura ridotta.</p>
+  </div>
+</header>
+
+""" + nastro("nastro--giallo") + """
 
 <section class="sezione">
   <div class="contenitore">
-    <h2 class="sezione__titolo">Gli obblighi che riguardano tutti</h2>
-    <p class="sezione__sotto">Sintesi divulgativa degli articoli che toccano il maggior numero di persone.
-       Il testo che fa fede &egrave; il regolamento approvato e pubblicato all'albo pretorio.
-       Gli importi indicati sono il minimo, il massimo e il pagamento in misura ridotta.</p>
-
     <div class="tabella-guscio">
       <table>
         <thead>
@@ -516,24 +707,66 @@ CORPO_RURALE = """
       </table>
     </div>
 
-    <div class="riquadro riquadro--giallo">
-      <h4><span aria-hidden="true">&#9888;</span> Se il danno c'&egrave; gi&agrave; stato</h4>
-      <p>Oltre alla sanzione, chi provoca danni a beni comuni &egrave; tenuto al <strong>rimborso di tutte
-         le spese di ripristino</strong>. Quando il verbale impone di rimettere a posto i luoghi, il termine
-         &egrave; di <strong>30 giorni</strong>: scaduto quello, il Comune emette ordinanza e poi esegue
-         d'ufficio a spese dell'obbligato, recuperando le somme con ordinanza ingiunzione, che &egrave;
-         titolo esecutivo. Nei casi previsti scatta anche il deferimento all'Autorit&agrave; Giudiziaria ai
-         sensi dell'articolo 650 del codice penale.</p>
+    <div class="griglia griglia--2">
+      <div class="riquadro riquadro--giallo">
+        <h3><span aria-hidden="true">&#9888;</span> Se il danno c'&egrave; gi&agrave; stato</h3>
+        <p>Oltre alla sanzione, chi provoca danni a beni comuni &egrave; tenuto al <strong>rimborso di tutte
+           le spese di ripristino</strong>. Quando il verbale impone di rimettere a posto i luoghi, il
+           termine &egrave; di <strong>30 giorni</strong>: scaduto quello, il Comune emette ordinanza e poi
+           esegue d'ufficio a spese dell'obbligato, recuperando le somme con ordinanza ingiunzione, che
+           &egrave; titolo esecutivo. Nei casi previsti scatta anche il deferimento all'Autorit&agrave;
+           Giudiziaria ai sensi dell'articolo 650 del codice penale.</p>
+      </div>
+      <div class="riquadro riquadro--nero">
+        <h3>Il metodo, in quattro passaggi</h3>
+        <ul class="elenco-timbri">
+          <li><span class="icona" aria-hidden="true">&#128226;</span>
+            <div><strong>Informazione.</strong> Il regolamento va conosciuto prima di essere applicato.
+            Chi non sa non pu&ograve; adeguarsi.</div></li>
+          <li><span class="icona" aria-hidden="true">&#128221;</span>
+            <div><strong>Sopralluogo e diffida.</strong> La Polizia Locale accerta e indica che cosa
+            sistemare, con un termine non superiore a dieci giorni.</div></li>
+          <li><span class="icona" aria-hidden="true">&#9878;</span>
+            <div><strong>Sanzione.</strong> Solo per chi, avvisato, decide di non fare niente. E la
+            diffida vale una volta sola.</div></li>
+          <li><span class="icona" aria-hidden="true">&#128295;</span>
+            <div><strong>Esecuzione in danno.</strong> Quando c'&egrave; pericolo per la circolazione o
+            per il deflusso delle acque, il Comune interviene e addebita il costo.</div></li>
+        </ul>
+        <p><a href="polizia-rurale-diffida.html">Come funziona la diffida &rarr;</a></p>
+      </div>
     </div>
   </div>
 </section>
+""" + RITORNO_RURALE + """
+</main>
+"""
 
-<section class="sezione sezione--scura">
+scrivi("polizia-rurale-obblighi.html", pagina(
+    "polizia-rurale-obblighi.html",
+    "Gli obblighi del regolamento di polizia rurale | GinoPizza.it",
+    "Sfalci, fossi e canali, siepi e alberi sulle strade, deflusso delle acque e arature a Roveredo in "
+    "Piano: chi deve fare che cosa, entro quando e quanto costa non farlo.",
+    CORPO_OBBLIGHI))
+
+
+# ---------- 2.3 I fuochi nei fondi ----------
+CORPO_FUOCHI = """
+<main>
+<header class="testata testata--nera">
   <div class="contenitore">
-    <h2 class="sezione__titolo" style="color:#facc15"><span aria-hidden="true">&#128293;</span>
-      Fuochi nei fondi: quando si pu&ograve; e quando no</h2>
-    <p class="sezione__sotto">&Egrave; l'articolo su cui arrivano pi&ugrave; segnalazioni, ed &egrave; anche
-       quello dove l'errore costa caro. Articolo 14.</p>
+    <span class="testata__occhiello">Polizia rurale &middot; Articolo 14</span>
+    <h1><span aria-hidden="true">&#128293;</span> I fuochi<br>nei fondi</h1>
+    <p class="testata__sommario">&Egrave; l'articolo su cui arrivano pi&ugrave; segnalazioni, ed &egrave;
+       anche quello dove l'errore costa caro. Nel centro abitato non si accende. Fuori si pu&ograve;, ma
+       con regole precise.</p>
+  </div>
+</header>
+
+""" + nastro("nastro--giallo") + """
+
+<section class="sezione">
+  <div class="contenitore">
     <div class="griglia griglia--2">
       <div class="riquadro riquadro--blu">
         <h3><span aria-hidden="true">&#10060;</span> Nel centro abitato: vietato</h3>
@@ -562,24 +795,74 @@ CORPO_RURALE = """
         </ul>
       </div>
     </div>
+
     <div class="riquadro">
-      <p><strong>Bruciare teli, legacci non vegetali, sacchi, imballaggi e rifiuti di qualsiasi natura</strong>
-         non &egrave; un fuoco agricolo: &egrave; smaltimento di rifiuti non autorizzato, punito ai sensi del
+      <h3>Che cosa non si brucia, mai</h3>
+      <p><strong>Teli, legacci non vegetali, sacchi, imballaggi e rifiuti di qualsiasi natura</strong>
+         non sono un fuoco agricolo: sono smaltimento di rifiuti non autorizzato, punito ai sensi del
          decreto legislativo 152 del 2006 e dell'articolo 674 del codice penale.</p>
       <p>Resta consentita l'accensione per cuocere cibi o riscaldare persone all'addiaccio, purch&eacute;
-         controllata e confinata. Per i <strong>fal&ograve; epifanici</strong> la richiesta va fatta
-         pervenire al protocollo comunale <strong>almeno sette giorni prima</strong> dell'evento.</p>
+         controllata e confinata, con legna, carbone o loro derivati.</p>
       <p>Violazioni dell'articolo 14: da <strong>75 a 450 euro</strong>, in misura ridotta
          <strong>150 euro</strong>.</p>
     </div>
+
+    <div class="griglia griglia--2">
+      <div class="riquadro riquadro--nero">
+        <h3><span aria-hidden="true">&#127881;</span> I fal&ograve; epifanici</h3>
+        <p>Sono consentiti nel rispetto della normativa di settore e delle eventuali ordinanze sindacali
+           sull'inquinamento atmosferico. La richiesta di accensione deve pervenire al protocollo comunale
+           <strong>almeno sette giorni prima</strong> dell'evento.</p>
+      </div>
+      <div class="riquadro riquadro--giallo">
+        <h3><span aria-hidden="true">&#127807;</span> A fini fitosanitari, articolo 15</h3>
+        <p>L'abbruciamento di materiale vegetale prodotto nel fondo &egrave; ammesso
+           <strong>tutto l'anno, anche dentro il centro abitato</strong>, ma solo per necessit&agrave;
+           fitosanitarie accertate dal Servizio fitosanitario e chimico dell'ERSA FVG, con le stesse
+           cautele: cumulo a 100 metri da strade, luoghi pubblici, ferrovie e abitazioni, presidio
+           continuo, niente vento sopra il grado 3.</p>
+        <p>Stessa sanzione: da <strong>75 a 450 euro</strong>, ridotta <strong>150 euro</strong>.</p>
+      </div>
+    </div>
+
+    <div class="riquadro riquadro--blu">
+      <h3><span aria-hidden="true">&#9888;</span> Il Comune pu&ograve; fermare tutto</h3>
+      <p>Il Comune e le altre amministrazioni competenti in materia ambientale possono
+         <strong>sospendere, differire o vietare</strong> la combustione quando le condizioni
+         meteorologiche, climatiche o ambientali sono sfavorevoli, o quando ne possono derivare rischi
+         per l'incolumit&agrave; e per la salute, con particolare riferimento al Piano d'Azione Comunale
+         contro gli episodi acuti di inquinamento atmosferico.</p>
+    </div>
   </div>
 </section>
+""" + RITORNO_RURALE + """
+</main>
+"""
+
+scrivi("polizia-rurale-fuochi.html", pagina(
+    "polizia-rurale-fuochi.html",
+    "I fuochi nei fondi | GinoPizza.it",
+    "Articolo 14 del regolamento di polizia rurale di Roveredo in Piano: dove e quando si può accendere "
+    "un fuoco agricolo, con quali distanze e cautele, e che cosa non si brucia mai.",
+    CORPO_FUOCHI))
+
+
+# ---------- 2.4 Le distanze ----------
+CORPO_DISTANZE = """
+<main>
+<header class="testata">
+  <div class="contenitore">
+    <span class="testata__occhiello">Polizia rurale &middot; Articoli 22, 34, 39, 49 e 57</span>
+    <h1><span aria-hidden="true">&#128207;</span> Le distanze,<br>in tabella</h1>
+    <p class="testata__sommario">Le nove tavole grafiche allegate al regolamento illustrano questi valori
+       disegno per disegno. Qui sono raccolti in una tabella sola, per non doverli cercare.</p>
+  </div>
+</header>
+
+""" + nastro("nastro--giallo") + """
 
 <section class="sezione">
   <div class="contenitore">
-    <h2 class="sezione__titolo"><span aria-hidden="true">&#128207;</span> Le distanze, in tabella</h2>
-    <p class="sezione__sotto">Le nove tavole grafiche allegate al regolamento illustrano questi valori
-       disegno per disegno. Qui sono raccolti in una tabella sola.</p>
     <div class="tabella-guscio">
       <table>
         <thead><tr><th scope="col">Che cosa</th><th scope="col">Distanza minima</th>
@@ -622,28 +905,65 @@ CORPO_RURALE = """
         </tbody>
       </table>
     </div>
-    <div class="riquadro riquadro--nero">
-      <h4><span aria-hidden="true">&#127795;</span> Una data da segnare: 15 ottobre</h4>
-      <p>Il taglio delle specie arboree deve avvenire <strong>in periodo di riposo vegetativo, tra il
-         15 ottobre e il 15 aprile</strong>, avendo cura di mantenere vitale la capacit&agrave; vegetativa
-         delle piante (articolo 57). Fuori da quella finestra non si taglia.</p>
+
+    <div class="griglia griglia--2">
+      <div class="riquadro riquadro--nero">
+        <h3><span aria-hidden="true">&#127795;</span> Una data da segnare: 15 ottobre</h3>
+        <p>Il taglio delle specie arboree deve avvenire <strong>in periodo di riposo vegetativo, tra il
+           15 ottobre e il 15 aprile</strong>, avendo cura di mantenere vitale la capacit&agrave;
+           vegetativa delle piante (articolo 57). Fuori da quella finestra non si taglia.</p>
+      </div>
+      <div class="riquadro riquadro--giallo">
+        <h3><span aria-hidden="true">&#128221;</span> Prima di piantare, avvisa</h3>
+        <p>L'impianto o il reimpianto di colture arboree permanenti a bordo strada, cio&egrave; frutteti,
+           pioppeti, vigneti, arboreti da legna e biomassa, &egrave; subordinato a
+           <strong>preventiva comunicazione all'ufficio comunale competente</strong>, corredata dagli
+           elementi informativi dell'impianto (articolo 46).</p>
+        <p>Chi non la fa: da <strong>50 a 300 euro</strong>, ridotta <strong>100 euro</strong>.</p>
+      </div>
     </div>
   </div>
 </section>
+""" + RITORNO_RURALE + """
+</main>
+"""
 
-<section class="sezione sezione--blu">
+scrivi("polizia-rurale-distanze.html", pagina(
+    "polizia-rurale-distanze.html",
+    "Le distanze del regolamento di polizia rurale | GinoPizza.it",
+    "Tredici distanze minime del regolamento di polizia rurale di Roveredo in Piano: fossi, alberi, siepi, "
+    "apiari, vigneti e frutteti, ricoveri zootecnici, con l'articolo di riferimento.",
+    CORPO_DISTANZE))
+
+
+# ---------- 2.5 Le novità del testo ----------
+CORPO_NOVITA = """
+<main>
+<header class="testata testata--gialla">
   <div class="contenitore">
-    <h2 class="sezione__titolo">Le altre due novit&agrave; del testo</h2>
+    <span class="testata__occhiello">Polizia rurale &middot; Come &egrave; nato</span>
+    <h1><span aria-hidden="true">&#127968;</span> Le altre novit&agrave;<br>e la storia del testo</h1>
+    <p class="testata__sommario">Oltre alla diffida amministrativa, il regolamento porta due cambiamenti
+       che si vedono sul territorio: un patto di buon vicinato sui nuovi impianti e i prati stabili resi
+       finalmente convenienti.</p>
+  </div>
+</header>
+
+""" + nastro("nastro--blu") + """
+
+<section class="sezione">
+  <div class="contenitore">
     <div class="griglia griglia--2">
       <div class="riquadro">
         <h3><span aria-hidden="true">&#127968;</span> Un patto di buon vicinato</h3>
         <p>Il regolamento introduce misure di mitigazione per i nuovi impianti di frutteti e vigneti, a
            protezione delle abitazioni, delle scuole e delle aree dove giocano i bambini: siepi arboree e
-           arbustive con piante autoctone, distanze maggiorate, opere di compensazione non inferiori al
-           5 per cento della superficie coltivata.</p>
+           arbustive con piante autoctone lungo il confine, distanze maggiorate, opere di compensazione non
+           inferiori al <strong>5 per cento</strong> della superficie coltivata.</p>
         <p>&laquo;Non &egrave; un atto contro l'agricoltura, che resta una ricchezza fondamentale del nostro
            territorio. &Egrave; un patto di buon vicinato: chi coltiva pu&ograve; continuare a farlo, e chi
            abita accanto ai campi pu&ograve; farlo con maggiore serenit&agrave;.&raquo;</p>
+        <p><a href="polizia-rurale-distanze.html">Le distanze esatte &rarr;</a></p>
       </div>
       <div class="riquadro">
         <h3><span aria-hidden="true">&#127807;</span> Prati stabili, meno ostacoli</h3>
@@ -653,84 +973,61 @@ CORPO_RURALE = """
         <p>Per i prati stabili, e per i terreni che il proprietario ha dichiarato alla Regione di voler
            trasformare in prato stabile, <strong>non vale l'obbligo dei tre sfalci</strong> dell'articolo 7:
            si applica la normativa regionale.</p>
+        <p>Perch&eacute; &laquo;fare la cosa giusta per l'ambiente sia non solo possibile, ma anche
+           conveniente&raquo;.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section class="sezione">
+<section class="sezione sezione--scura">
   <div class="contenitore">
-    <div class="griglia griglia--2">
-      <div class="riquadro riquadro--giallo">
-        <h3>Il metodo, in quattro passaggi</h3>
-        <ul class="elenco-timbri">
-          <li><span class="icona" aria-hidden="true">&#128226;</span>
-            <div><strong>Informazione.</strong> Il regolamento va conosciuto prima di essere applicato.
-            Chi non sa non pu&ograve; adeguarsi.</div></li>
-          <li><span class="icona" aria-hidden="true">&#128221;</span>
-            <div><strong>Sopralluogo e diffida.</strong> La Polizia Locale accerta e indica che cosa
-            sistemare, con un termine non superiore a dieci giorni.</div></li>
-          <li><span class="icona" aria-hidden="true">&#9878;</span>
-            <div><strong>Sanzione.</strong> Solo per chi, avvisato, decide di non fare niente. E la
-            diffida, ricordiamolo, vale una volta sola.</div></li>
-          <li><span class="icona" aria-hidden="true">&#128295;</span>
-            <div><strong>Esecuzione in danno.</strong> Quando c'&egrave; pericolo per la circolazione o
-            per il deflusso delle acque, il Comune interviene e addebita il costo.</div></li>
-        </ul>
-      </div>
-      <div class="riquadro riquadro--nero">
-        <h3>Un lavoro di due amministrazioni</h3>
-        <p>Il percorso &egrave; stato avviato nella scorsa legislatura e portato a compimento
-           dall'attuale. Le due commissioni hanno approvato il testo all'unanimit&agrave;, e cos&igrave;
-           ha fatto il Consiglio comunale.</p>
-        <p>Il ringraziamento dell'assessore &egrave; andato a chi ha avviato il percorso, l'allora assessore
-           <strong>Igor Barbariol</strong>, ai comandanti della Polizia Locale che si sono succeduti alla
-           guida del Corpo, <strong>Angelo Segatto</strong>, che ha impostato il lavoro, e
-           <strong>Cristiano Ciletti</strong>, che lo ha condotto al traguardo, a tutti gli operatori e ai
-           portatori di interesse coinvolti, e al Sindaco <strong>Paolo Nadal</strong>, per i correttivi
-           suggeriti.</p>
-        <p>&laquo;Non &egrave; il regolamento di una maggioranza o di un assessore: &egrave; il regolamento
-           di Roveredo in Piano.&raquo;</p>
-      </div>
-    </div>
-
+    <h2 class="sezione__titolo" style="color:#facc15">Un lavoro di due amministrazioni</h2>
     <div class="riquadro">
-      <h3>Segnala un punto critico</h3>
-      <p>Un fosso ostruito, un ramo che sporge su una curva cieca, un cumulo abbandonato lungo una strada
-         di campagna. Se lo vedi, dillo: la segnalazione arriva a chi pu&ograve; intervenire.</p>
-      <p>Indica il punto nel modo pi&ugrave; preciso possibile, cio&egrave; via, altezza civico o
-         riferimento visibile, e se puoi allega una fotografia.</p>
-      <div class="fila-bottoni">
-        <a class="bottone bottone--blu" href="https://wa.me/393283692227" target="_blank" rel="noopener">
-          Segnala su WhatsApp</a>
-        <a class="bottone bottone--bianco" href="contatti.html">Tutti i recapiti</a>
-        <a class="bottone bottone--bianco" href="https://comune.roveredoinpiano.pn.it/"
-           target="_blank" rel="noopener">Albo pretorio del Comune</a>
-      </div>
+      <p>Il percorso &egrave; stato avviato nella scorsa legislatura e portato a compimento dall'attuale.
+         Le due commissioni hanno approvato il testo all'unanimit&agrave;, e cos&igrave; ha fatto il
+         Consiglio comunale nella seduta del 22 giugno 2026.</p>
+      <p>Il ringraziamento dell'assessore &egrave; andato a chi ha avviato il percorso, l'allora assessore
+         <strong>Igor Barbariol</strong>, ai comandanti della Polizia Locale che si sono succeduti alla
+         guida del Corpo, <strong>Angelo Segatto</strong>, che ha impostato il lavoro, e
+         <strong>Cristiano Ciletti</strong>, che lo ha condotto al traguardo, a tutti gli operatori e ai
+         portatori di interesse coinvolti, e al Sindaco <strong>Paolo Nadal</strong>, per i correttivi
+         suggeriti e per avere aiutato a tenere i piedi per terra.</p>
+      <p>&laquo;Questo regolamento non &egrave; il lavoro di una sola persona, n&eacute; di una sola
+         stagione amministrativa. &Egrave; una storia di continuit&agrave;: un'amministrazione ha iniziato,
+         un'altra ha completato. &Egrave; il modo in cui le istituzioni dovrebbero funzionare, mettendo
+         davanti a tutto il bene della comunit&agrave;, al di l&agrave; di chi taglia il nastro.&raquo;</p>
+    </div>
+    <div class="riquadro riquadro--blu">
+      <p style="font-family:Oswald,Impact,sans-serif;text-transform:uppercase;font-size:1.4rem;line-height:1.25;margin:0">
+        &laquo;Non &egrave; il regolamento di una maggioranza o di un assessore:<br>
+        &egrave; il regolamento di Roveredo in Piano.&raquo;</p>
     </div>
   </div>
 </section>
+""" + RITORNO_RURALE + """
 </main>
 """
 
-scrivi("polizia-rurale.html", pagina(
-    "polizia-rurale.html",
-    "Regolamento di polizia rurale | GinoPizza.it",
-    "Il regolamento di polizia rurale di Roveredo in Piano, in vigore dal 13 settembre 2026: diffida "
-    "amministrativa, sfalci, fossi e canali, siepi e alberi sulle strade, fuochi nei fondi, distanze e "
-    "sanzioni. Ottantaquattro articoli spiegati.",
-    CORPO_RURALE))
+scrivi("polizia-rurale-novita.html", pagina(
+    "polizia-rurale-novita.html",
+    "Le novità del regolamento di polizia rurale | GinoPizza.it",
+    "Il patto di buon vicinato sui nuovi impianti di vigneti e frutteti, i prati stabili resi più semplici, "
+    "e la storia di un testo cominciato da un'amministrazione e finito da un'altra.",
+    CORPO_NOVITA))
 
 
 # ============================================================
-# 3. sicurezza-territorio.html
+# 3. Sicurezza: indice e schede
 # ============================================================
+RITORNO_SICUREZZA = ritorno("sicurezza-territorio.html", "Torna a sicurezza e truffe")
+
 CORPO_SICUREZZA = """
 <main>
 <header class="testata testata--nera">
   <div class="contenitore">
-    <span class="testata__occhiello">Delega sicurezza &middot; Formazione a ottobre</span>
-    <h1><span aria-hidden="true">&#128065;</span> Controllo di vicinato<br>e vademecum antitruffa</h1>
+    <span class="testata__occhiello">Delega sicurezza</span>
+    <h1><span aria-hidden="true">&#128065;</span> Sicurezza<br>del territorio</h1>
     <p class="testata__sommario">Due cose insieme: cittadini che imparano a guardare nel modo giusto e un
        vademecum che smonta i raggiri uno per uno. Niente ronde, niente paura: solo occhi aperti e numeri
        giusti da chiamare.</p>
@@ -746,15 +1043,102 @@ CORPO_SICUREZZA = """
         Vigilanza civica: occhi aperti</span>
       <span class="timbro timbro--blu"><span aria-hidden="true">&#128680;</span>
         Allerta truffe: vademecum costalonga.org</span>
-      <span class="timbro"><span aria-hidden="true">&#128197;</span> Formazione a ottobre</span>
     </div>
 
-    <h2 class="sezione__titolo" style="margin-top:22px">Controllo di vicinato: come funziona davvero</h2>
-    <p class="sezione__sotto">Il Comune di Roveredo in Piano ha sottoscritto il protocollo d'intesa con la
-       <strong>Prefettura di Pordenone</strong> sul controllo di vicinato. &Egrave; una forma di
-       <strong>partecipazione passiva</strong>: i residenti monitorano la propria zona e segnalano, tramite
-       il referente, alle forze di Polizia statali e locali. Nient'altro.</p>
+    <div class="riquadro riquadro--giallo" style="margin-top:20px">
+      <h3><span aria-hidden="true">&#9878;</span> Fermezza s&igrave;, allarmismi no</h3>
+      <p>Le truffe sono un fenomeno molto diffuso e prendono di mira soprattutto le persone fragili o
+         anziane. Non colpiscono per caso: seguono copioni collaudati, quasi sempre gli stessi.
+         <strong>Chi li conosce li riconosce, e chi li riconosce non ci casca.</strong></p>
+      <p>Si pu&ograve; uscire di casa, rispondere al telefono e comprare in rete. Basta sapere dove
+         guardare.</p>
+      <div class="fila-bottoni">
+        <a class="bottone bottone--blu" href="tel:112">In emergenza: 112</a>
+        <a class="bottone bottone--bianco" href="https://costalonga.org/truffe/"
+           target="_blank" rel="noopener">Vademecum completo in 24 punti</a>
+      </div>
+    </div>
+  </div>
+</section>
 
+<section class="sezione sezione--scura">
+  <div class="contenitore">
+    <h2 class="sezione__titolo" style="color:#facc15">Che cosa c'&egrave; dentro</h2>
+    <p class="sezione__sotto">Quattro schede. Ognuna ha il suo collegamento: quella sulle truffe alla porta
+       si pu&ograve; mandare da sola a un genitore anziano.</p>
+    <div class="griglia griglia--2">
+""" + scheda("controllo-di-vicinato.html", "01", "Protocollo con la Prefettura", "&#128101;",
+             "Il controllo di vicinato",
+             "Cittadini che osservano la propria via e segnalano alla Polizia Locale tramite un referente. "
+             "Nessuna ronda, nessun pattugliamento: &egrave; scritto nero su bianco.",
+             ("Che cosa si segnala, voce per voce",
+              "Come si costituisce un gruppo",
+              "I compiti del coordinatore")) \
+  + scheda("truffe-alla-porta.html", "02", "Vademecum antitruffa", "&#128682;",
+           "Le truffe alla porta di casa",
+           "I quattro raggiri che arrivano sul pianerottolo: finte forze dell'ordine, finti tecnici del "
+           "gas, finti rappresentanti di luce e acqua, il finto nipote.",
+           ("Come funziona ciascuno",
+            "Cosa fare subito",
+            "Cosa non fare mai")) \
+  + scheda("truffe-fuori-casa.html", "03", "Vademecum antitruffa", "&#128663;",
+           "Fuori casa, al telefono, allo sportello",
+           "Il falso amico che ti abbraccia per strada, lo specchietto, il bancomat manomesso, le "
+           "banconote bloccate, il finto centro assistenza, i raggiri sentimentali in rete.",
+           ("Sei casistiche delle fonti ufficiali",
+            "Il segnale che smaschera ognuna",
+            "Termini tecnici spiegati in italiano")) \
+  + scheda("truffe-cosa-fare.html", "04", "Vademecum antitruffa", "&#128680;",
+           "I segnali e cosa fare",
+           "Cambiano le storie, non i meccanismi. I segnali che attraversano tutte le truffe, le azioni "
+           "da fare nell'ordine se &egrave; gi&agrave; successo, e i numeri utili.",
+           ("Nove segnali di allarme ricorrenti",
+            "Le prime ore contano: otto passi",
+            "Il 112 e i numeri per bloccare la carta")) + """    </div>
+  </div>
+</section>
+
+<section class="sezione">
+  <div class="contenitore">
+    <div class="riquadro riquadro--nero">
+      <h3>Le fonti</h3>
+      <p>Tutti i contenuti sulle truffe sono ripresi dal vademecum pubblicato su
+         <a href="https://costalonga.org/truffe/" target="_blank" rel="noopener">costalonga.org/truffe</a>,
+         che a sua volta raccoglie soltanto quanto scrivono tre fonti ufficiali: il
+         <strong>Ministero dell'Interno</strong>, la <strong>Polizia Postale e delle Comunicazioni</strong>
+         e l'<strong>Arma dei Carabinieri</strong>. Nessun dato aggiunto, nessuna statistica inventata.</p>
+    </div>
+  </div>
+</section>
+</main>
+"""
+
+scrivi("sicurezza-territorio.html", pagina(
+    "sicurezza-territorio.html",
+    "Sicurezza del territorio | GinoPizza.it",
+    "Controllo di vicinato a Roveredo in Piano e vademecum antitruffa: le truffe alla porta, quelle fuori "
+    "casa, i segnali di allarme e cosa fare se è già successo. Numero unico di emergenza 112.",
+    CORPO_SICUREZZA))
+
+
+# ---------- 3.1 Controllo di vicinato ----------
+CORPO_VICINATO = """
+<main>
+<header class="testata">
+  <div class="contenitore">
+    <span class="testata__occhiello">Sicurezza &middot; Protocollo con la Prefettura di Pordenone</span>
+    <h1><span aria-hidden="true">&#128101;</span> Il controllo<br>di vicinato</h1>
+    <p class="testata__sommario">Il Comune ha sottoscritto il protocollo d'intesa con la Prefettura di
+       Pordenone. &Egrave; una forma di <strong>partecipazione passiva</strong>: i residenti monitorano la
+       propria zona e segnalano, tramite il referente, alle forze di Polizia statali e locali.
+       Nient'altro.</p>
+  </div>
+</header>
+
+""" + nastro("nastro--giallo") + """
+
+<section class="sezione">
+  <div class="contenitore">
     <div class="doppia-colonna" style="margin-bottom:24px">
       <div class="colonna-fare">
         <h4><span aria-hidden="true">&#9989;</span> Che cos'&egrave;</h4>
@@ -883,29 +1267,41 @@ CORPO_SICUREZZA = """
     </div>
   </div>
 </section>
+""" + RITORNO_SICUREZZA + """
+</main>
+"""
 
-""" + nastro("nastro--giallo") + """
+scrivi("controllo-di-vicinato.html", pagina(
+    "controllo-di-vicinato.html",
+    "Il controllo di vicinato | GinoPizza.it",
+    "Il controllo di vicinato a Roveredo in Piano, con il protocollo d'intesa con la Prefettura di "
+    "Pordenone: che cosa si segnala, come si costituisce un gruppo, i compiti del coordinatore. "
+    "Nessuna ronda, nessun pattugliamento.",
+    CORPO_VICINATO))
 
-<section class="sezione sezione--blu">
+
+# ---------- 3.2 Truffe alla porta di casa ----------
+CORPO_TRUFFE_PORTA = """
+<main>
+<header class="testata testata--gialla">
   <div class="contenitore">
-    <span class="testata__occhiello" style="background:#000;color:#facc15">
-      Fonte: costalonga.org &middot; Ministero dell'Interno, Polizia Postale, Arma dei Carabinieri</span>
-    <h2 class="sezione__titolo" style="margin-top:14px">Vademecum antitruffa</h2>
-    <p class="sezione__sotto">Le truffe non colpiscono a caso: seguono copioni collaudati, quasi sempre
-       gli stessi. Chi li conosce li riconosce, e chi li riconosce non ci casca. Qui sotto ci sono soltanto
-       i casi descritti dalle fonti ufficiali. Nessun dato aggiunto, nessuna statistica inventata.</p>
-    <div class="fila-bottoni">
-      <button type="button" class="bottone bottone--giallo" data-stampa>
-        <span aria-hidden="true">&#128424;</span> Scarica / stampa vademecum</button>
-      <a class="bottone bottone--bianco" href="https://costalonga.org/truffe/" target="_blank" rel="noopener">
-        Vademecum completo in 24 punti</a>
-    </div>
+    <span class="testata__occhiello">Vademecum antitruffa &middot; Fonti ufficiali</span>
+    <h1><span aria-hidden="true">&#128682;</span> Le truffe alla<br>porta di casa</h1>
+    <p class="testata__sommario">Qui il truffatore si fa vedere: suona alla porta o ti prepara con una
+       telefonata. Quattro copioni, sempre gli stessi. Questa pagina si pu&ograve; stampare e appendere
+       vicino al telefono.</p>
   </div>
-</section>
+</header>
+
+""" + nastro("nastro--blu") + """
 
 <section class="sezione">
   <div class="contenitore">
-    <h2 class="sezione__titolo">Alla porta di casa</h2>
+    <div class="fila-bottoni non-stampare" style="margin-top:0;margin-bottom:24px">
+      <button type="button" class="bottone bottone--blu" data-stampa>
+        <span aria-hidden="true">&#128424;</span> Stampa questa pagina</button>
+      <a class="bottone bottone--bianco" href="tel:112">Chiama il 112</a>
+    </div>
 
     <div class="allerta">
       <div class="allerta__cima">
@@ -1029,34 +1425,75 @@ CORPO_SICUREZZA = """
         </div>
       </div>
     </div>
+
+    <div class="emergenza">
+      <span style="font-family:Oswald,Impact,sans-serif;letter-spacing:.14em;font-size:.9rem">
+        Numero unico di emergenza</span>
+      <span class="emergenza__numero">112</span>
+      <p>Chiamalo quando il truffatore &egrave; alla porta o nei paraggi, e ogni volta che hai un dubbio su
+         chi ti sta contattando.</p>
+      <div class="fila-bottoni non-stampare" style="justify-content:center">
+        <a class="bottone bottone--giallo" href="tel:112">Chiama il 112</a>
+      </div>
+    </div>
   </div>
 </section>
+""" + RITORNO_SICUREZZA + """
+</main>
+"""
 
-<section class="sezione sezione--scura">
+scrivi("truffe-alla-porta.html", pagina(
+    "truffe-alla-porta.html",
+    "Le truffe alla porta di casa | GinoPizza.it",
+    "Finte forze dell'ordine, finti tecnici del gas, finti rappresentanti di luce e acqua, il finto nipote: "
+    "come funzionano, cosa fare subito e cosa non fare mai. Da stampare e appendere vicino al telefono.",
+    CORPO_TRUFFE_PORTA))
+
+
+# ---------- 3.3 Truffe fuori casa ----------
+CORPO_TRUFFE_FUORI = """
+<main>
+<header class="testata testata--nera">
   <div class="contenitore">
-    <h2 class="sezione__titolo" style="color:#facc15">Fuori casa, al telefono, allo sportello</h2>
+    <span class="testata__occhiello">Vademecum antitruffa &middot; Fonti ufficiali</span>
+    <h1><span aria-hidden="true">&#128663;</span> Fuori casa,<br>al telefono, allo sportello</h1>
+    <p class="testata__sommario">Per strada, in auto, davanti al bancomat, al telefono e in rete. Sei
+       casistiche descritte dalle fonti ufficiali, con il segnale che smaschera ciascuna.</p>
+  </div>
+</header>
+
+""" + nastro("nastro--giallo") + """
+
+<section class="sezione">
+  <div class="contenitore">
+    <div class="fila-bottoni non-stampare" style="margin-top:0;margin-bottom:24px">
+      <button type="button" class="bottone bottone--blu" data-stampa>
+        <span aria-hidden="true">&#128424;</span> Stampa questa pagina</button>
+    </div>
 
     <div class="griglia griglia--2">
-      <div class="riquadro">
+      <div class="riquadro riquadro--giallo">
         <h3><span aria-hidden="true">&#128680;</span> Truffa del falso amico</h3>
         <p>Ti abbraccia per strada fingendo di conoscerti, di solito come amico dei figli o dei nipoti, e ti
            trattiene in una lunga conversazione per distrarti. Poi racconta di un debito e chiede contante
            o gioielli.</p>
         <p><strong>Il segnale:</strong> l'abbraccio arriva <em>prima</em> del riconoscimento. Quando esci non
-           portare grosse somme con te e, quando paghi al bar, non mostrare denaro o oggetti di valore.</p>
+           portare grosse somme con te e, quando paghi al bar, non mostrare denaro o oggetti di valore.
+           Cammina in zone illuminate e frequentate.</p>
       </div>
-      <div class="riquadro">
+      <div class="riquadro riquadro--giallo">
         <h3><span aria-hidden="true">&#128680;</span> Truffa dello specchietto</h3>
         <p>Senti un colpo secco sulla fiancata, provocato in realt&agrave; con un sasso o un bastone. Ti
            chiedono di risolvere subito in contanti per evitare l'assicurazione, anche con toni aggressivi.</p>
         <p><strong>Cosa fare:</strong> resta in auto senza scendere, chiudi i finestrini posteriori e quello
-           lato passeggero, e pretendi da subito di chiamare la Polizia Locale o il <strong>112</strong>.</p>
+           lato passeggero per evitare che eventuali complici prendano i tuoi oggetti, e pretendi da subito
+           di chiamare la Polizia Locale o il <strong>112</strong>.</p>
       </div>
       <div class="riquadro">
         <h3><span aria-hidden="true">&#128680;</span> Truffa del bancomat</h3>
         <p>Lo sportello viene alterato con un lettore abusivo, una microtelecamera o una finta tastiera, per
            clonare la carta e memorizzare il codice PIN (numero di identificazione personale, il codice
-           segreto della carta).</p>
+           segreto della carta). I malfattori sono appostati nei dintorni, in contatto visivo.</p>
         <p><strong>Ispeziona prima di usarlo:</strong> microtelecamere sopra o accanto alla tastiera; la
            fessura della tessera che si muove o si stacca; la tastiera non ben fissa, con un gradino di un
            paio di millimetri. Nel dubbio non inserire la tessera, allontanati e chiama le forze dell'ordine.
@@ -1074,28 +1511,69 @@ CORPO_SICUREZZA = """
         <h3><span aria-hidden="true">&#128680;</span> Truffa del centro assistenza</h3>
         <p>Ti telefonano fingendo di essere un centro di assistenza e fanno domande banali costruite per
            farti rispondere &laquo;s&igrave;&raquo;. Quel &laquo;s&igrave;&raquo; viene estratto dalla
-           registrazione e usato come assenso per attivare un contratto mai voluto.</p>
+           registrazione e usato come assenso per attivare un contratto mai voluto. Te ne accorgi alla prima
+           bolletta.</p>
         <p><strong>Il segnale:</strong> chi chiama non si fa identificare con chiarezza e insiste con domande
-           che chiedono solo una conferma. Fai domande tu ed evita di fornire dati personali.</p>
+           che chiedono solo una conferma. Fai domande tu ed evita di fornire dati personali. Ricorda che il
+           numero che compare sullo schermo pu&ograve; essere falsificato.</p>
       </div>
       <div class="riquadro">
         <h3><span aria-hidden="true">&#128680;</span> Raggiri sentimentali in rete</h3>
         <p>Un profilo falso, foto rubate dalla rete, una presenza costante e premurosa, false affinit&agrave;
            e progetti di vita. Poi arrivano le richieste di denaro per motivi di salute, viaggi o questioni
-           legali. Ottenuta la prima somma, le richieste continuano.</p>
+           legali. Ottenuta la prima somma, le richieste continuano, fino a somme molto ingenti.</p>
         <p><strong>Il segnale:</strong> non si fa mai incontrare di persona. Cerca nome e immagini del profilo
-           su un motore di ricerca e verifica se ci sono gi&agrave; segnalazioni di altri.</p>
+           su un motore di ricerca e verifica se ci sono gi&agrave; segnalazioni di altri. Se &egrave;
+           successo: denuncia e smetti di pagare qualsiasi somma.</p>
       </div>
+    </div>
+
+    <div class="riquadro riquadro--nero">
+      <h3><span aria-hidden="true">&#128179;</span> Per chi ha un negozio</h3>
+      <p>Il terminale POS (il punto vendita, cio&egrave; l'apparecchio che accetta i pagamenti con carta)
+         pu&ograve; essere manomesso per catturare i dati delle carte dei clienti, anche approfittando di
+         furti o intrusioni notturne.</p>
+      <p><strong>Cosa fare:</strong> controllare l'apparecchio con frequenza e, dopo un furto o
+         un'intrusione, farlo verificare da personale specializzato. Per i pagamenti con carta di credito,
+         verificare il documento di identit&agrave; del cliente.</p>
     </div>
   </div>
 </section>
+""" + RITORNO_SICUREZZA + """
+</main>
+"""
+
+scrivi("truffe-fuori-casa.html", pagina(
+    "truffe-fuori-casa.html",
+    "Truffe fuori casa, al telefono e allo sportello | GinoPizza.it",
+    "Falso amico, specchietto, bancomat manomesso, banconote bloccate, finto centro assistenza e raggiri "
+    "sentimentali in rete: come funzionano e il segnale che smaschera ciascuno.",
+    CORPO_TRUFFE_FUORI))
+
+
+# ---------- 3.4 Segnali e cosa fare ----------
+CORPO_TRUFFE_COSA_FARE = """
+<main>
+<header class="testata">
+  <div class="contenitore">
+    <span class="testata__occhiello">Vademecum antitruffa &middot; Fonti ufficiali</span>
+    <h1><span aria-hidden="true">&#128680;</span> I segnali<br>e cosa fare</h1>
+    <p class="testata__sommario">Cambiano le storie, non i meccanismi. Questi segnali attraversano quasi
+       tutte le truffe descritte dalle fonti ufficiali: quando ne compare anche uno solo, ci si ferma.</p>
+  </div>
+</header>
+
+""" + nastro("nastro--blu") + """
 
 <section class="sezione">
   <div class="contenitore">
-    <h2 class="sezione__titolo">I segnali che valgono per tutte</h2>
-    <p class="sezione__sotto">Cambiano le storie, non i meccanismi. Quando ne compare anche uno solo,
-       ci si ferma.</p>
+    <div class="fila-bottoni non-stampare" style="margin-top:0;margin-bottom:24px">
+      <button type="button" class="bottone bottone--blu" data-stampa>
+        <span aria-hidden="true">&#128424;</span> Stampa questa pagina</button>
+    </div>
+
     <div class="riquadro riquadro--giallo">
+      <h3>Nove segnali che valgono per tutte</h3>
       <ul class="elenco-timbri">
         <li><span class="icona" aria-hidden="true">&#9203;</span><div><strong>L'urgenza.</strong>
           Chi ha troppa fretta di concludere non merita fiducia.</div></li>
@@ -1174,8 +1652,7 @@ CORPO_SICUREZZA = """
       <table>
         <thead><tr><th scope="col">Recapito</th><th scope="col">A che cosa serve</th></tr></thead>
         <tbody>
-          <tr><td><strong>112</strong></td>
-              <td>Numero unico di emergenza.</td></tr>
+          <tr><td><strong>112</strong></td><td>Numero unico di emergenza.</td></tr>
           <tr><td><strong>114</strong></td>
               <td>Emergenza infanzia, attivo 24 ore su 24 tutti i giorni, gratuito, da telefono fisso e
                   mobile. Sito: www.114.it</td></tr>
@@ -1196,10 +1673,7 @@ CORPO_SICUREZZA = """
        bollette.</p>
 
     <div class="riquadro riquadro--nero">
-      <h3>Le fonti</h3>
-      <p>Tutti i contenuti di questa pagina sono ripresi dal vademecum pubblicato su
-         <a href="https://costalonga.org/truffe/" target="_blank" rel="noopener">costalonga.org/truffe</a>,
-         che a sua volta raccoglie soltanto quanto scrivono tre fonti ufficiali:</p>
+      <h3>Le tre fonti ufficiali</h3>
       <ul class="elenco-timbri">
         <li><span class="icona" aria-hidden="true">&#127963;</span><div><strong>Ministero dell'Interno.</strong>
           Difendersi dalle trappole del commercio elettronico.<br>
@@ -1214,29 +1688,34 @@ CORPO_SICUREZZA = """
           <a href="https://www.carabinieri.it/in-vostro-aiuto/consigli/pillole-di-prevenzione/contro-le-truffe"
              target="_blank" rel="noopener">carabinieri.it</a></div></li>
       </ul>
+      <p><a href="https://costalonga.org/truffe/" target="_blank" rel="noopener">Il vademecum completo in
+         24 punti su costalonga.org &rarr;</a></p>
     </div>
   </div>
 </section>
+""" + RITORNO_SICUREZZA + """
 </main>
 """
 
-scrivi("sicurezza-territorio.html", pagina(
-    "sicurezza-territorio.html",
-    "Controllo di vicinato e vademecum antitruffa | GinoPizza.it",
-    "Formazione al controllo di vicinato a ottobre a Roveredo in Piano e vademecum antitruffa completo: "
-    "finti tecnici, finto avvocato, finto nipote, specchietto, bancomat. Cosa fare subito, cosa non fare mai, "
-    "numeri utili e 112.",
-    CORPO_SICUREZZA))
+scrivi("truffe-cosa-fare.html", pagina(
+    "truffe-cosa-fare.html",
+    "I segnali di allarme e cosa fare | GinoPizza.it",
+    "I nove segnali che attraversano tutte le truffe, le otto azioni da fare nell'ordine se è già "
+    "successo, il numero unico di emergenza 112 e i numeri per bloccare la carta.",
+    CORPO_TRUFFE_COSA_FARE))
+
 
 # ============================================================
-# 4. viabilita.html
+# 4. Viabilità: indice e schede
 # ============================================================
+RITORNO_VIABILITA = ritorno("viabilita.html", "Torna alla viabilità")
+
 CORPO_VIABILITA = """
 <main>
 <header class="testata">
   <div class="contenitore">
-    <span class="testata__occhiello">Delega viabilit&agrave; &middot; Stalli rosa e rilevatori di velocit&agrave;</span>
-    <h1><span aria-hidden="true">&#128663;</span> Parcheggi rosa<br>e controlli di velocit&agrave;</h1>
+    <span class="testata__occhiello">Delega viabilit&agrave;</span>
+    <h1><span aria-hidden="true">&#128663;</span> Viabilit&agrave;</h1>
     <p class="testata__sommario">Due provvedimenti che vanno nella stessa direzione: restituire la strada
        a chi ci cammina, ci abita e ci porta i figli. Uno d&agrave; un posto a chi ne ha bisogno, l'altro
        toglie spazio a chi corre dove non si corre.</p>
@@ -1245,22 +1724,91 @@ CORPO_VIABILITA = """
 
 """ + nastro("nastro--giallo") + """
 
+<section class="sezione sezione--scura">
+  <div class="contenitore">
+    <h2 class="sezione__titolo" style="color:#facc15">Che cosa c'&egrave; dentro</h2>
+    <p class="sezione__sotto">Due schede, due collegamenti distinti. Quella sul permesso rosa si
+       pu&ograve; mandare da sola a chi sta per diventare genitore.</p>
+    <div class="griglia griglia--2">
+""" + scheda("permesso-rosa.html", "01", "Regolamento comunale", "&#128118;",
+             "Il permesso rosa",
+             "Gli stalli riservati alle donne in gravidanza e ai genitori con un bambino fino a due anni. "
+             "Chi lo chiede, che cosa serve, quanto dura la sosta.",
+             ("Requisiti, documenti e marche da bollo",
+              "Tre ore con disco orario, dalle 8 alle 20",
+              "Le sanzioni dell'articolo 188 bis")) \
+  + scheda("controlli-velocita.html", "02", "Comunicato del 10 agosto 2026", "&#9889;",
+           "I controlli di velocit&agrave;",
+           "I rilevatori sono tornati in funzione. Postazioni segnalate e non nascoste, calendario reso "
+           "noto in anticipo, apparecchi omologati e tarati.",
+           ("Perch&eacute; erano fermi e perch&eacute; ripartono",
+            "Come e quando si controlla",
+            "Le parole dell'assessore e del comandante")) + """    </div>
+  </div>
+</section>
+
 <section class="sezione">
   <div class="contenitore">
-    <div>
-      <span class="timbro timbro--blu timbro--obliquo"><span aria-hidden="true">&#128118;</span>
-        Stalli rosa: regolamento approvato</span>
-      <span class="timbro timbro--nero"><span aria-hidden="true">&#9889;</span>
-        Velocit&agrave; moderata o multa garantita</span>
+    <div class="riquadro riquadro--blu">
+      <h3><span aria-hidden="true">&#9888;</span> Il filo che le tiene insieme</h3>
+      <p>Uno stallo rosa occupato da chi non ne ha diritto &egrave; un posto tolto a una donna incinta o a
+         un genitore con un neonato in braccio. Un'auto che corre in mezzo alle case &egrave; un rischio
+         per chi attraversa. In tutti e due i casi la strada viene tolta a qualcuno, e in tutti e due i casi
+         si controlla e si sanziona. <strong>Senza eccezioni, nemmeno per gli amministratori.</strong></p>
     </div>
 
-    <h2 class="sezione__titolo" style="margin-top:22px"><span aria-hidden="true">&#128118;</span>
-      Gli stalli rosa</h2>
-    <p class="sezione__sotto">Uno stallo rosa non &egrave; una cortesia: &egrave; una misura di
-       sicurezza. Scendere dall'auto con un seggiolino, una borsa e un bambino di un anno, in un parcheggio
-       stretto e trafficato, &egrave; un rischio concreto. Il Comune ha approvato il proprio regolamento
-       per il rilascio e l'uso del permesso rosa.</p>
+    <div class="griglia griglia--2">
+      <div class="riquadro riquadro--nero">
+        <h3>Segnala un punto dove si corre</h3>
+        <p>Indica la via, il tratto e l'orario in cui il problema si presenta. Le segnalazioni dei residenti
+           servono a scegliere dove mettere le postazioni: sono il dato pi&ugrave; utile che c'&egrave;, e
+           sono proprio quelle che hanno portato a questa decisione.</p>
+        <div class="fila-bottoni">
+          <a class="bottone bottone--giallo" href="https://wa.me/393283692227" target="_blank" rel="noopener">
+            Segnala su WhatsApp</a>
+        </div>
+      </div>
+      <div class="riquadro">
+        <h3>Dove si chiede il permesso rosa</h3>
+        <p>Presidio di Roveredo in Piano del Corpo del Distretto di Polizia Locale, Piazza Roma 8,
+           telefono 0434 388670. Il modulo si scarica anche dal sito del Comune.</p>
+        <div class="fila-bottoni">
+          <a class="bottone bottone--blu" href="contatti.html">Recapiti completi</a>
+          <a class="bottone bottone--bianco" href="https://comune.roveredoinpiano.pn.it/"
+             target="_blank" rel="noopener">Sito del Comune</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+"""
 
+scrivi("viabilita.html", pagina(
+    "viabilita.html",
+    "Viabilità | GinoPizza.it",
+    "Permesso rosa e controlli di velocità a Roveredo in Piano: gli stalli riservati a chi ne ha diritto e "
+    "i rilevatori tornati in funzione, segnalati e non nascosti.",
+    CORPO_VIABILITA))
+
+
+# ---------- 4.1 Il permesso rosa ----------
+CORPO_ROSA = """
+<main>
+<header class="testata testata--gialla">
+  <div class="contenitore">
+    <span class="testata__occhiello">Viabilit&agrave; &middot; Regolamento comunale</span>
+    <h1><span aria-hidden="true">&#128118;</span> Il permesso<br>rosa</h1>
+    <p class="testata__sommario">Uno stallo rosa non &egrave; una cortesia: &egrave; una misura di
+       sicurezza. Scendere dall'auto con un seggiolino, una borsa e un bambino di un anno, in un parcheggio
+       stretto e trafficato, &egrave; un rischio concreto.</p>
+  </div>
+</header>
+
+""" + nastro("nastro--blu") + """
+
+<section class="sezione">
+  <div class="contenitore">
     <div class="griglia griglia--2">
       <div class="riquadro riquadro--giallo">
         <h3>Chi pu&ograve; chiederlo</h3>
@@ -1383,14 +1931,6 @@ CORPO_VIABILITA = """
       </div>
     </div>
 
-    <div class="riquadro riquadro--blu">
-      <h3><span aria-hidden="true">&#9888;</span> Detto chiaramente</h3>
-      <p>&laquo;Faccio un minuto&raquo; non &egrave; una categoria prevista dal Codice della Strada.
-         Uno stallo rosa occupato da chi non ne ha diritto &egrave; un posto tolto a una donna incinta o a
-         un genitore con un neonato in braccio. Si controlla e si sanziona. Senza eccezioni,
-         <strong>nemmeno per gli amministratori</strong>.</p>
-    </div>
-
     <div class="riquadro">
       <h3>Dove sono gli stalli</h3>
       <p>Gli stalli rosa sono individuati da provvedimenti di viabilit&agrave; e da deliberazioni di Giunta,
@@ -1403,19 +1943,36 @@ CORPO_VIABILITA = """
     </div>
   </div>
 </section>
+""" + RITORNO_VIABILITA + """
+</main>
+"""
 
-""" + nastro("nastro--blu") + """
+scrivi("permesso-rosa.html", pagina(
+    "permesso-rosa.html",
+    "Il permesso rosa | GinoPizza.it",
+    "Permesso rosa a Roveredo in Piano: chi può chiederlo, documenti e marche da bollo, dove si consegna e "
+    "si ritira, limite di tre ore con disco orario, scadenze e sanzioni dell'articolo 188 bis.",
+    CORPO_ROSA))
 
-<section class="sezione sezione--scura">
+
+# ---------- 4.2 I controlli di velocità ----------
+CORPO_VELOCITA = """
+<main>
+<header class="testata testata--nera">
   <div class="contenitore">
-    <span class="testata__occhiello" style="background:#facc15;color:#000">Comunicato del 10 agosto 2026</span>
-    <h2 class="sezione__titolo" style="color:#facc15;margin-top:14px"><span aria-hidden="true">&#9889;</span>
-      Tornano i rilevatori di velocit&agrave;</h2>
-    <p class="sezione__sotto">Piede pi&ugrave; leggero sull'acceleratore. &Egrave; questo, ridotto all'osso,
-       quello che il Comune chiede a chi guida lungo le strade che tagliano il paese, dove il traffico di
-       passaggio tende a correre pi&ugrave; del dovuto. Non un'operazione lampo: un presidio destinato
-       a durare.</p>
+    <span class="testata__occhiello">Viabilit&agrave; &middot; Comunicato del 10 agosto 2026</span>
+    <h1><span aria-hidden="true">&#9889;</span> I controlli<br>di velocit&agrave;</h1>
+    <p class="testata__sommario">Piede pi&ugrave; leggero sull'acceleratore. &Egrave; questo, ridotto
+       all'osso, quello che il Comune chiede a chi guida lungo le strade che tagliano il paese, dove il
+       traffico di passaggio tende a correre pi&ugrave; del dovuto. Non un'operazione lampo: un presidio
+       destinato a durare.</p>
+  </div>
+</header>
 
+""" + nastro("nastro--giallo") + """
+
+<section class="sezione">
+  <div class="contenitore">
     <div class="griglia griglia--2">
       <div class="riquadro">
         <h3><span aria-hidden="true">&#128260;</span> Perch&eacute; si riprende solo adesso</h3>
@@ -1480,45 +2037,28 @@ CORPO_VIABILITA = """
       <p style="font-size:.9rem">Il calendario dei controlli e i tratti interessati vengono resi noti in
          anticipo dal Comune: &egrave; una scelta, non un obbligo da aggirare.</p>
     </div>
-  </div>
-</section>
 
-<section class="sezione">
-  <div class="contenitore">
-    <div class="griglia griglia--2">
-      <div class="riquadro riquadro--nero">
-        <h3>Segnala un punto dove si corre</h3>
-        <p>Indica la via, il tratto e l'orario in cui il problema si presenta. Le segnalazioni dei residenti
-           servono a scegliere dove mettere le postazioni: sono il dato pi&ugrave; utile che c'&egrave;, e
-           sono proprio quelle che hanno portato a questa decisione.</p>
-        <div class="fila-bottoni">
-          <a class="bottone bottone--giallo" href="https://wa.me/393283692227" target="_blank" rel="noopener">
-            Segnala su WhatsApp</a>
-        </div>
-      </div>
-      <div class="riquadro">
-        <h3>Dove si chiede il permesso rosa</h3>
-        <p>Presidio di Roveredo in Piano del Corpo del Distretto di Polizia Locale, Piazza Roma 8,
-           telefono 0434 388670. Il modulo si scarica anche dal sito del Comune.</p>
-        <div class="fila-bottoni">
-          <a class="bottone bottone--blu" href="contatti.html">Recapiti completi</a>
-          <a class="bottone bottone--bianco" href="https://comune.roveredoinpiano.pn.it/"
-             target="_blank" rel="noopener">Sito del Comune</a>
-        </div>
+    <div class="riquadro riquadro--nero">
+      <h3>Segnala un punto dove si corre</h3>
+      <p>Le segnalazioni dei residenti arrivano da tempo, e sono proprio quelle che hanno portato a questa
+         decisione. Indica la via, il tratto e l'orario in cui il problema si presenta.</p>
+      <div class="fila-bottoni">
+        <a class="bottone bottone--giallo" href="https://wa.me/393283692227" target="_blank" rel="noopener">
+          Segnala su WhatsApp</a>
       </div>
     </div>
   </div>
 </section>
+""" + RITORNO_VIABILITA + """
 </main>
 """
 
-scrivi("viabilita.html", pagina(
-    "viabilita.html",
-    "Parcheggi rosa e controlli di velocità | GinoPizza.it",
-    "Permesso rosa a Roveredo in Piano: chi può chiederlo, documenti, marche da bollo, dove si consegna, "
-    "limite di tre ore con disco orario e sanzioni dell'articolo 188 bis. E il ritorno dei rilevatori di "
-    "velocità, con postazioni segnalate e calendario reso noto in anticipo.",
-    CORPO_VIABILITA))
+scrivi("controlli-velocita.html", pagina(
+    "controlli-velocita.html",
+    "I controlli di velocità | GinoPizza.it",
+    "I rilevatori di velocità di Roveredo in Piano sono tornati in funzione: perché erano fermi, come "
+    "funzionano i controlli, postazioni segnalate e calendario reso noto in anticipo.",
+    CORPO_VELOCITA))
 
 
 # ============================================================
@@ -1723,15 +2263,16 @@ scrivi("contatti.html", pagina(
 # ============================================================
 # File di servizio
 # ============================================================
-PAGINE_MAPPA = ["", "polizia-rurale.html", "sicurezza-territorio.html",
-                "viabilita.html", "contatti.html"]
+PAGINE_MAPPA = [("" if f == "index.html" else f) for f in NOMI]
 oggi = datetime.date.today().isoformat()
 scrivi("sitemap.xml",
        '<?xml version="1.0" encoding="UTF-8"?>\n'
        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
        + "".join('  <url>\n    <loc>%s/%s</loc>\n    <lastmod>%s</lastmod>\n'
                  '    <changefreq>monthly</changefreq>\n    <priority>%s</priority>\n  </url>\n'
-                 % (SITO, p, oggi, "1.0" if p == "" else "0.8") for p in PAGINE_MAPPA)
+                 % (SITO, p, oggi,
+                    "1.0" if p == "" else ("0.8" if NOMI.get(p, ("", 1))[1] is None else "0.6"))
+                 for p in PAGINE_MAPPA)
        + '</urlset>\n')
 
 scrivi("robots.txt", "User-agent: *\nAllow: /\n\nSitemap: %s/sitemap.xml\n" % SITO)

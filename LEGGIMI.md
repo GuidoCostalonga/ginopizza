@@ -12,18 +12,35 @@ Ricognizione dei contenuti: **14 settembre 2026**.
 
 ## Che cosa contiene
 
+Sedici pagine: la pagina principale, tre indici, dieci schede e i contatti.
+Ogni scheda ha un indirizzo suo, così si può condividere da sola.
+
 | File | Pagina |
 |---|---|
 | `index.html` | Manifesto, paradosso del modem del 1994, bacheca dei provvedimenti |
-| `polizia-rurale.html` | Regolamento di polizia rurale: fossi, rami, fondi agricoli, incuria |
-| `sicurezza-territorio.html` | Controllo di vicinato (protocollo con la Prefettura) e vademecum antitruffa |
-| `viabilita.html` | Permesso rosa e rilevatori di velocità |
-| `contatti.html` | Recapiti del municipio, appuntamenti, protocollo, contatto diretto |
-| `stile.css` | Identità visiva: blu elettrico, nero, bianco, giallo allerta, bordi spessi, ombre nette. Il rosso resta solo per la marcatura «da verificare» e per il tocco tricolore |
-| `sito.js` | Tendina, cassetto per telefono, condivisione, copia negli appunti, stampa |
-| `sigillo.svg` | Sigillo araldico: «Repubblica delle cose fatte», trancio di pizza e stivale |
-| `costruisci.py` | Generatore delle pagine. Unica fonte da modificare |
-| `CNAME`, `robots.txt`, `sitemap.xml`, `.nojekyll` | File di servizio per la pubblicazione |
+| `polizia-rurale.html` | **Indice.** L'atto in sintesi e le cinque schede |
+| `polizia-rurale-diffida.html` | La diffida amministrativa, articolo 4 |
+| `polizia-rurale-obblighi.html` | Gli obblighi, articolo per articolo, con le sanzioni |
+| `polizia-rurale-fuochi.html` | I fuochi nei fondi, articoli 14 e 15 |
+| `polizia-rurale-distanze.html` | Le tredici distanze, dagli articoli e dalle tavole |
+| `polizia-rurale-novita.html` | Le altre novità e la storia del testo |
+| `sicurezza-territorio.html` | **Indice.** Fermezza sì, allarmismi no, e le quattro schede |
+| `controllo-di-vicinato.html` | Il protocollo con la Prefettura di Pordenone |
+| `truffe-alla-porta.html` | Le quattro truffe alla porta di casa, da stampare |
+| `truffe-fuori-casa.html` | Sei truffe fuori casa, al telefono e allo sportello |
+| `truffe-cosa-fare.html` | I segnali, cosa fare se è già successo, numeri utili |
+| `viabilita.html` | **Indice.** Il filo che tiene insieme le due schede |
+| `permesso-rosa.html` | Il permesso rosa: requisiti, documenti, uso, sanzioni |
+| `controlli-velocita.html` | I rilevatori di velocità tornati in funzione |
+| `contatti.html` | Recapiti del municipio e della Polizia Locale, appuntamenti |
+
+Più `stile.css`, `sito.js`, `sigillo.svg`, `costruisci.py` e i file di servizio
+`CNAME`, `robots.txt`, `sitemap.xml`, `.nojekyll`.
+
+Le schede figlie hanno le briciole di navigazione in alto (Home, indice, scheda)
+e il tasto di ritorno all'indice in fondo. Il registro `NOMI` dentro `costruisci.py`
+tiene insieme nomi brevi, gerarchia, briciole e mappa del sito: per aggiungere una
+scheda basta registrarla lì.
 
 ## Come si modifica
 

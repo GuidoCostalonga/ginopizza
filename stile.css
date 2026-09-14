@@ -118,23 +118,24 @@ h1,h2,h3,h4,.condensato{
 .tendina{position:relative}
 .tendina__pannello{
   display:none;position:absolute;right:0;top:calc(100% + 9px);
-  min-width:310px;background:var(--bianco);
+  min-width:370px;max-width:calc(100vw - 36px);background:var(--bianco);
   border:var(--bordo);box-shadow:var(--ombra-grande);padding:6px;
 }
 .tendina[data-aperta="si"] .tendina__pannello{display:block}
 .tendina__pannello a{
   display:flex;align-items:center;gap:10px;
   padding:11px 12px;text-decoration:none;color:var(--nero);
-  font-weight:600;font-size:0.92rem;border-bottom:var(--bordo-sottile);
+  font-weight:600;font-size:0.92rem;line-height:1.3;border-bottom:var(--bordo-sottile);
 }
 .tendina__pannello a:last-child{border-bottom:0}
 .tendina__pannello a:hover{background:var(--nero);color:var(--bianco)}
 .tendina__pannello a[aria-current="page"]{background:var(--giallo)}
-.tendina__emoji{font-size:1.2rem;line-height:1}
+.tendina__emoji{font-size:1.2rem;line-height:1;flex-shrink:0}
 .tendina__stato{
-  margin-left:auto;font-family:'Oswald',Impact,sans-serif;font-size:0.6rem;
+  margin-left:auto;flex-shrink:0;white-space:nowrap;
+  font-family:'Oswald',Impact,sans-serif;font-size:0.6rem;
   letter-spacing:0.08em;background:var(--blu);color:var(--bianco);
-  padding:2px 6px;border:1px solid var(--nero);text-transform:uppercase;
+  padding:3px 7px;border:1px solid var(--nero);text-transform:uppercase;
 }
 
 .panino{display:none;background:var(--nero);color:var(--bianco);border:var(--bordo-sottile);box-shadow:var(--ombra-piccola);padding:10px 13px;cursor:pointer;margin-left:auto}
@@ -189,9 +190,9 @@ h1,h2,h3,h4,.condensato{
 /* ---------- Sezioni e riquadri ---------- */
 .sezione{padding:44px 0}
 .sezione--scura{background:var(--nero);color:var(--bianco);border-top:var(--bordo);border-bottom:var(--bordo)}
-.sezione--scura a:not(.bottone){color:var(--giallo)}
+.sezione--scura a:not(.bottone):not(.manifesto){color:var(--giallo)}
 .sezione--blu{background:var(--blu);color:var(--bianco);border-top:var(--bordo);border-bottom:var(--bordo)}
-.sezione--blu a:not(.bottone){color:var(--giallo)}
+.sezione--blu a:not(.bottone):not(.manifesto){color:var(--giallo)}
 .sezione__titolo{font-size:clamp(1.8rem,5vw,3rem);margin-bottom:8px}
 .sezione__sotto{font-size:1.05rem;max-width:64ch;margin:0 0 26px;font-weight:500}
 
@@ -202,9 +203,9 @@ h1,h2,h3,h4,.condensato{
 }
 .riquadro--giallo{background:var(--giallo)}
 .riquadro--nero{background:var(--nero);color:var(--bianco)}
-.riquadro--nero a:not(.bottone){color:var(--giallo)}
+.riquadro--nero a:not(.bottone):not(.manifesto){color:var(--giallo)}
 .riquadro--blu{background:var(--blu);color:var(--bianco)}
-.riquadro--blu a:not(.bottone){color:var(--giallo)}
+.riquadro--blu a:not(.bottone):not(.manifesto){color:var(--giallo)}
 .riquadro h3{font-size:1.5rem;margin-bottom:10px}
 .riquadro h4{font-size:1.15rem;margin-bottom:8px}
 .riquadro p:last-child{margin-bottom:0}
@@ -235,6 +236,33 @@ h1,h2,h3,h4,.condensato{
   padding:10px 14px;text-align:center;letter-spacing:0.05em;font-size:0.9rem;
 }
 .manifesto:hover .manifesto__vai{background:var(--giallo);color:var(--nero)}
+
+/* ---------- Briciole di navigazione ---------- */
+.briciole{background:var(--nero);color:var(--bianco);padding:11px 0;border-bottom:var(--bordo)}
+.briciole__interno{max-width:1100px;margin:0 auto;padding:0 18px;
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+  font-family:'Oswald',Impact,sans-serif;text-transform:uppercase;
+  letter-spacing:0.07em;font-size:0.76rem}
+.briciole a{color:var(--giallo);text-decoration:none;border-bottom:2px solid transparent}
+.briciole a:hover{border-bottom-color:var(--giallo);color:var(--giallo)}
+.briciole span[aria-hidden]{opacity:.55}
+.briciole__qui{color:#cfcfcf}
+
+/* ---------- Indice: riassunto in fondo alla scheda ---------- */
+.manifesto__occhiello{font-size:.72rem;letter-spacing:.1em;
+  font-family:'Oswald',Impact,sans-serif;text-transform:uppercase}
+.manifesto__corpo ul{margin:0 0 16px;padding-left:19px}
+.manifesto__corpo li{font-size:.93rem;margin-bottom:5px}
+
+/* ---------- Rimando alla pagina precedente ---------- */
+.ritorno{
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:'Oswald',Impact,sans-serif;text-transform:uppercase;letter-spacing:0.05em;
+  font-size:0.9rem;padding:12px 18px;text-decoration:none;
+  background:var(--bianco);color:var(--nero);border:var(--bordo);box-shadow:var(--ombra);
+}
+.ritorno:hover{background:var(--giallo);color:var(--nero);transform:translate(-2px,-2px);
+  box-shadow:6px 6px 0 var(--nero)}
 
 /* ---------- Timbri e bollini ---------- */
 .timbro{
@@ -370,7 +398,7 @@ td strong{font-weight:700}
 
 /* ---------- Piè di pagina ---------- */
 .chiusura{background:var(--nero);color:var(--bianco);padding:44px 0 30px;border-top:5px solid var(--blu)}
-.chiusura a:not(.bottone){color:var(--giallo)}
+.chiusura a:not(.bottone):not(.manifesto){color:var(--giallo)}
 .chiusura__frase{
   background:var(--blu);color:var(--bianco);border:var(--bordo);box-shadow:var(--ombra);
   padding:22px;font-family:'Oswald',Impact,sans-serif;text-transform:uppercase;
