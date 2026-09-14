@@ -55,49 +55,42 @@ volta sola nel generatore, così restano identici su tutte le pagine.
 
 ## Stato della pubblicazione
 
-Il codice è **online** nel repository dedicato `GuidoCostalonga/ginopizza`, ramo `main`:
-https://github.com/GuidoCostalonga/ginopizza
+**Il sito è in linea su https://ginopizza.it** dal 14 settembre 2026.
 
-Restano due passaggi che richiedono un accesso non disponibile in automatico.
+| Elemento | Stato |
+|---|---|
+| Repository | `GuidoCostalonga/ginopizza`, ramo `main` |
+| Pubblicazione | Pagine GitHub, sorgente `main` cartella radice |
+| Dominio | `ginopizza.it`, con il file `CNAME` nel repository |
+| Certificato | Let's Encrypt, valido per `ginopizza.it` |
+| Sottodominio | `www.ginopizza.it` rimanda alla radice |
 
-### 1. Attivare le Pagine GitHub
+Verificato il 14 settembre 2026: tutte e sedici le pagine rispondono, foglio di stile,
+script e sigillo si caricano, nessun errore JavaScript, nessuno scorrimento orizzontale
+a 390 pixel.
 
-Impostazioni del repository, sezione **Pages**: sorgente **Deploy from a branch**,
-ramo `main`, cartella `/ (root)`, poi Salva. Il file `CNAME` è già nel repository e
-contiene `ginopizza.it`, quindi il dominio personalizzato viene riconosciuto da solo.
+### Rimane da spuntare: collegamento cifrato obbligatorio
 
-Dopo qualche minuto il sito risponde su https://guidocostalonga.github.io/ginopizza/
+Nelle impostazioni del repository, sezione **Pages**, la voce **Enforce HTTPS** non è
+ancora attiva: `http://ginopizza.it` serve il sito in chiaro invece di rimandare alla
+versione cifrata. Ora che il certificato è stato emesso la casella è selezionabile.
 
-### 2. Puntare il dominio
+### Come si aggiorna il sito
 
-Presso il gestore del dominio, sostituire il record che punta a 146.59.63.161 con i
-record delle Pagine GitHub, e aggiungere il sottodominio `www`.
+```
+python3 costruisci.py
+git add -A && git commit -m "..." && git push
+```
 
-Record verificati il 14 settembre 2026 risolvendo costalonga.org, che è già pubblicato
-con le Pagine GitHub:
+Le Pagine GitHub ripubblicano da sole a ogni invio sul ramo `main`.
+
+### Record DNS in uso
 
 | Tipo | Nome | Valore |
 |---|---|---|
-| A | @ | 185.199.108.153 |
-| A | @ | 185.199.109.153 |
-| A | @ | 185.199.110.153 |
-| A | @ | 185.199.111.153 |
-| AAAA | @ | 2606:50c0:8000::153 |
-| AAAA | @ | 2606:50c0:8001::153 |
-| AAAA | @ | 2606:50c0:8002::153 |
-| AAAA | @ | 2606:50c0:8003::153 |
+| A | @ | 185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153 |
+| AAAA | @ | 2606:50c0:8000::153, 2606:50c0:8001::153, 2606:50c0:8002::153, 2606:50c0:8003::153 |
 | CNAME | www | guidocostalonga.github.io. |
-
-A propagazione avvenuta, attivare nelle impostazioni delle Pagine la voce che impone il
-collegamento cifrato.
-
-### Strade alternative
-
-Il sito è statico: cinque file HTML, un foglio di stile, uno script e un'immagine
-vettoriale. Non serve alcun programma sul server, nessun database, nessuna compilazione.
-Basta copiare il contenuto della cartella nella radice del sito. Quindi restano possibili
-anche il trasferimento diretto per FTP o SFTP sul servizio attuale, che risponde
-sull'indirizzo 146.59.63.161, oppure un servizio di pubblicazione statica.
 
 ## Regola sui dati
 
