@@ -3,7 +3,7 @@
 Scrive file HTML puri: nessuna dipendenza esterna, nessun passaggio di compilazione.
 Si esegue con: python3 costruisci.py
 """
-import os, datetime
+import os, datetime, hashlib
 
 CARTELLA = os.path.dirname(os.path.abspath(__file__))
 SITO = "https://ginopizza.it"
@@ -33,6 +33,17 @@ NOMI = {
     "controlli-velocita.html":       ("I controlli di velocità", "viabilita.html"),
     "contatti.html":                 ("Ricevimento e contatti", None),
 }
+
+
+def impronta(nome):
+    """Breve impronta del file, da accodare all'indirizzo: costringe il browser a
+    riscaricare foglio di stile e script appena cambiano, invece di tenere in cache
+    per dieci minuti una versione vecchia."""
+    percorso = os.path.join(CARTELLA, nome)
+    if not os.path.exists(percorso):
+        return ""
+    with open(percorso, "rb") as f:
+        return "?v=" + hashlib.sha1(f.read()).hexdigest()[:8]
 
 
 def briciole(file_html):
@@ -90,7 +101,7 @@ def barra(corrente):
     return """<header class="barra">
   <div class="barra__interno">
     <a class="marchio" href="index.html">
-      <img src="sigillo.svg" alt="Sigillo GinoPizza, Repubblica delle cose fatte" width="52" height="52">
+      <img src="sigillo.svg%SIGILLO%" alt="Sigillo GinoPizza, Repubblica delle cose fatte" width="52" height="52">
       <span class="marchio__testo">GinoPizza.it<small>Assessorato operativo</small></span>
     </a>
     <nav class="menu" aria-label="Navigazione principale">
@@ -113,7 +124,8 @@ def barra(corrente):
     <a class="contatti" href="contatti.html"><span aria-hidden="true">✉</span> Ricevimento &amp; contatti</a>
   </div>
 </header>""".format(tendina=voci_tendina, cassetto=voci_cassetto,
-                    casa=attivo("index.html"), cont=attivo("contatti.html"))
+                    casa=attivo("index.html"),
+                    cont=attivo("contatti.html")).replace("%SIGILLO%", impronta("sigillo.svg"))
 
 
 def condivisione(titolo, file_html):
@@ -180,7 +192,7 @@ CHIUSURA = """<footer class="chiusura">
   </div>
 </footer>
 <div class="avviso" data-avviso data-visibile="no" role="status" aria-live="polite"></div>
-<script src="sito.js"></script>""" % RICOGNIZIONE
+<script src="sito.js{vjs}"></script>""" % RICOGNIZIONE
 
 
 def pagina(file_html, titolo_scheda, descrizione, corpo, emoji_og="\U0001F355"):
@@ -206,11 +218,11 @@ def pagina(file_html, titolo_scheda, descrizione, corpo, emoji_og="\U0001F355"):
 <meta name="twitter:title" content="{ts}">
 <meta name="twitter:description" content="{d}">
 <meta name="twitter:image" content="{s}/sigillo.svg">
-<link rel="icon" href="sigillo.svg" type="image/svg+xml">
+<link rel="icon" href="sigillo.svg{vsvg}" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="stile.css">
+<link rel="stylesheet" href="stile.css{vcss}">
 </head>
 <body>
 {barra}
@@ -221,9 +233,10 @@ def pagina(file_html, titolo_scheda, descrizione, corpo, emoji_og="\U0001F355"):
 </body>
 </html>
 """.format(ts=titolo_scheda, d=descrizione, u=url, s=SITO,
+           vcss=impronta("stile.css"), vjs=impronta("sito.js"), vsvg=impronta("sigillo.svg"),
            barra=barra(file_html), bric=briciole(file_html),
            cond=condivisione(titolo_scheda, file_html),
-           corpo=corpo, chiusura=CHIUSURA)
+           corpo=corpo, chiusura=CHIUSURA.replace("{vjs}", impronta("sito.js")))
 
 
 def nastro(classe="nastro--blu"):
