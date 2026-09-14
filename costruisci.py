@@ -27,9 +27,7 @@ NOMI = {
     "polizia-rurale-novita.html":    ("Le novità del testo", "polizia-rurale.html"),
     "sicurezza-territorio.html":     ("Sicurezza", None),
     "controllo-di-vicinato.html":    ("Controllo di vicinato", "sicurezza-territorio.html"),
-    "truffe-alla-porta.html":        ("Truffe alla porta di casa", "sicurezza-territorio.html"),
-    "truffe-fuori-casa.html":        ("Truffe fuori casa", "sicurezza-territorio.html"),
-    "truffe-cosa-fare.html":         ("Segnali e cosa fare", "sicurezza-territorio.html"),
+    "vademecum-antitruffa.html":     ("Il vademecum antitruffa", "sicurezza-territorio.html"),
     "viabilita.html":                ("Viabilità", None),
     "permesso-rosa.html":            ("Il permesso rosa", "viabilita.html"),
     "controlli-velocita.html":       ("I controlli di velocità", "viabilita.html"),
@@ -1064,8 +1062,8 @@ CORPO_SICUREZZA = """
 <section class="sezione sezione--scura">
   <div class="contenitore">
     <h2 class="sezione__titolo" style="color:#facc15">Che cosa c'&egrave; dentro</h2>
-    <p class="sezione__sotto">Quattro schede. Ognuna ha il suo collegamento: quella sulle truffe alla porta
-       si pu&ograve; mandare da sola a un genitore anziano.</p>
+    <p class="sezione__sotto">Due schede. Il vademecum &egrave; pensato per essere stampato tutto intero e
+       appeso vicino al telefono, oppure mandato cos&igrave; com'&egrave; a un genitore anziano.</p>
     <div class="griglia griglia--2">
 """ + scheda("controllo-di-vicinato.html", "01", "Protocollo con la Prefettura", "&#128101;",
              "Il controllo di vicinato",
@@ -1074,27 +1072,14 @@ CORPO_SICUREZZA = """
              ("Che cosa si segnala, voce per voce",
               "Come si costituisce un gruppo",
               "I compiti del coordinatore")) \
-  + scheda("truffe-alla-porta.html", "02", "Vademecum antitruffa", "&#128682;",
-           "Le truffe alla porta di casa",
-           "I quattro raggiri che arrivano sul pianerottolo: finte forze dell'ordine, finti tecnici del "
-           "gas, finti rappresentanti di luce e acqua, il finto nipote.",
-           ("Come funziona ciascuno",
-            "Cosa fare subito",
-            "Cosa non fare mai")) \
-  + scheda("truffe-fuori-casa.html", "03", "Vademecum antitruffa", "&#128663;",
-           "Fuori casa, al telefono, allo sportello",
-           "Il falso amico che ti abbraccia per strada, lo specchietto, il bancomat manomesso, le "
-           "banconote bloccate, il finto centro assistenza, i raggiri sentimentali in rete.",
-           ("Sei casistiche delle fonti ufficiali",
-            "Il segnale che smaschera ognuna",
-            "Termini tecnici spiegati in italiano")) \
-  + scheda("truffe-cosa-fare.html", "04", "Vademecum antitruffa", "&#128680;",
-           "I segnali e cosa fare",
-           "Cambiano le storie, non i meccanismi. I segnali che attraversano tutte le truffe, le azioni "
-           "da fare nell'ordine se &egrave; gi&agrave; successo, e i numeri utili.",
-           ("Nove segnali di allarme ricorrenti",
-            "Le prime ore contano: otto passi",
-            "Il 112 e i numeri per bloccare la carta")) + """    </div>
+  + scheda("vademecum-antitruffa.html", "02", "Ministero dell'Interno, Polizia Postale, Carabinieri",
+           "&#128680;",
+           "Il vademecum antitruffa",
+           "Tutti i raggiri in una pagina sola, da stampare e tenere vicino al telefono: come funzionano, "
+           "il segnale che li smaschera, cosa fare subito e cosa non fare mai.",
+           ("Quattro truffe alla porta di casa",
+            "Sei truffe fuori casa, al telefono, allo sportello",
+            "I segnali, cosa fare se &egrave; gi&agrave; successo, i numeri utili")) + """    </div>
   </div>
 </section>
 
@@ -1280,16 +1265,17 @@ scrivi("controllo-di-vicinato.html", pagina(
     CORPO_VICINATO))
 
 
-# ---------- 3.2 Truffe alla porta di casa ----------
-CORPO_TRUFFE_PORTA = """
+# ---------- 3.2 Il vademecum antitruffa ----------
+CORPO_VADEMECUM = """
 <main>
 <header class="testata testata--gialla">
   <div class="contenitore">
-    <span class="testata__occhiello">Vademecum antitruffa &middot; Fonti ufficiali</span>
-    <h1><span aria-hidden="true">&#128682;</span> Le truffe alla<br>porta di casa</h1>
-    <p class="testata__sommario">Qui il truffatore si fa vedere: suona alla porta o ti prepara con una
-       telefonata. Quattro copioni, sempre gli stessi. Questa pagina si pu&ograve; stampare e appendere
-       vicino al telefono.</p>
+    <span class="testata__occhiello">Sicurezza &middot; Ministero dell'Interno, Polizia Postale, Arma dei Carabinieri</span>
+    <h1><span aria-hidden="true">&#128680;</span> Il vademecum<br>antitruffa</h1>
+    <p class="testata__sommario">Le truffe non colpiscono per caso: seguono copioni collaudati, quasi sempre
+       gli stessi. Chi li conosce li riconosce, e chi li riconosce non ci casca. Questa pagina raccoglie
+       soltanto quello che scrivono le tre fonti ufficiali, ed &egrave; fatta per essere stampata tutta
+       intera e appesa vicino al telefono.</p>
   </div>
 </header>
 
@@ -1297,11 +1283,23 @@ CORPO_TRUFFE_PORTA = """
 
 <section class="sezione">
   <div class="contenitore">
-    <div class="fila-bottoni non-stampare" style="margin-top:0;margin-bottom:24px">
+    <div class="fila-bottoni non-stampare" style="margin-top:0;margin-bottom:0">
       <button type="button" class="bottone bottone--blu" data-stampa>
-        <span aria-hidden="true">&#128424;</span> Stampa questa pagina</button>
+        <span aria-hidden="true">&#128424;</span> Stampa tutto il vademecum</button>
       <a class="bottone bottone--bianco" href="tel:112">Chiama il 112</a>
     </div>
+  </div>
+</section>
+
+<section class="sezione" style="padding-top:0">
+  <div class="contenitore">
+    <h2 class="sezione__titolo">Alla porta di casa</h2>
+    <p class="sezione__sotto">Qui il truffatore si fa vedere: suona alla porta, oppure ti prepara con una telefonata. Quattro copioni, sempre gli stessi.</p>
+    
+  </div>
+</section>
+<section class="sezione">
+  <div class="contenitore">
 
     <div class="allerta">
       <div class="allerta__cima">
@@ -1425,51 +1423,17 @@ CORPO_TRUFFE_PORTA = """
         </div>
       </div>
     </div>
-
-    <div class="emergenza">
-      <span style="font-family:Oswald,Impact,sans-serif;letter-spacing:.14em;font-size:.9rem">
-        Numero unico di emergenza</span>
-      <span class="emergenza__numero">112</span>
-      <p>Chiamalo quando il truffatore &egrave; alla porta o nei paraggi, e ogni volta che hai un dubbio su
-         chi ti sta contattando.</p>
-      <div class="fila-bottoni non-stampare" style="justify-content:center">
-        <a class="bottone bottone--giallo" href="tel:112">Chiama il 112</a>
-      </div>
     </div>
+</section>
+<section class="sezione sezione--scura" style="padding-bottom:0">
+  <div class="contenitore">
+    <h2 class="sezione__titolo" style="color:#facc15">Fuori casa, al telefono, allo sportello</h2>
+    <p class="sezione__sotto">Per strada, in auto, davanti al bancomat, al telefono e in rete. Sei
+       casistiche, con il segnale che smaschera ciascuna.</p>
   </div>
 </section>
-""" + RITORNO_SICUREZZA + """
-</main>
-"""
-
-scrivi("truffe-alla-porta.html", pagina(
-    "truffe-alla-porta.html",
-    "Le truffe alla porta di casa | GinoPizza.it",
-    "Finte forze dell'ordine, finti tecnici del gas, finti rappresentanti di luce e acqua, il finto nipote: "
-    "come funzionano, cosa fare subito e cosa non fare mai. Da stampare e appendere vicino al telefono.",
-    CORPO_TRUFFE_PORTA))
-
-
-# ---------- 3.3 Truffe fuori casa ----------
-CORPO_TRUFFE_FUORI = """
-<main>
-<header class="testata testata--nera">
+<section class="sezione sezione--scura" style="padding-top:24px">
   <div class="contenitore">
-    <span class="testata__occhiello">Vademecum antitruffa &middot; Fonti ufficiali</span>
-    <h1><span aria-hidden="true">&#128663;</span> Fuori casa,<br>al telefono, allo sportello</h1>
-    <p class="testata__sommario">Per strada, in auto, davanti al bancomat, al telefono e in rete. Sei
-       casistiche descritte dalle fonti ufficiali, con il segnale che smaschera ciascuna.</p>
-  </div>
-</header>
-
-""" + nastro("nastro--giallo") + """
-
-<section class="sezione">
-  <div class="contenitore">
-    <div class="fila-bottoni non-stampare" style="margin-top:0;margin-bottom:24px">
-      <button type="button" class="bottone bottone--blu" data-stampa>
-        <span aria-hidden="true">&#128424;</span> Stampa questa pagina</button>
-    </div>
 
     <div class="griglia griglia--2">
       <div class="riquadro riquadro--giallo">
@@ -1539,38 +1503,8 @@ CORPO_TRUFFE_FUORI = """
     </div>
   </div>
 </section>
-""" + RITORNO_SICUREZZA + """
-</main>
-"""
-
-scrivi("truffe-fuori-casa.html", pagina(
-    "truffe-fuori-casa.html",
-    "Truffe fuori casa, al telefono e allo sportello | GinoPizza.it",
-    "Falso amico, specchietto, bancomat manomesso, banconote bloccate, finto centro assistenza e raggiri "
-    "sentimentali in rete: come funzionano e il segnale che smaschera ciascuno.",
-    CORPO_TRUFFE_FUORI))
-
-
-# ---------- 3.4 Segnali e cosa fare ----------
-CORPO_TRUFFE_COSA_FARE = """
-<main>
-<header class="testata">
-  <div class="contenitore">
-    <span class="testata__occhiello">Vademecum antitruffa &middot; Fonti ufficiali</span>
-    <h1><span aria-hidden="true">&#128680;</span> I segnali<br>e cosa fare</h1>
-    <p class="testata__sommario">Cambiano le storie, non i meccanismi. Questi segnali attraversano quasi
-       tutte le truffe descritte dalle fonti ufficiali: quando ne compare anche uno solo, ci si ferma.</p>
-  </div>
-</header>
-
-""" + nastro("nastro--blu") + """
-
 <section class="sezione">
   <div class="contenitore">
-    <div class="fila-bottoni non-stampare" style="margin-top:0;margin-bottom:24px">
-      <button type="button" class="bottone bottone--blu" data-stampa>
-        <span aria-hidden="true">&#128424;</span> Stampa questa pagina</button>
-    </div>
 
     <div class="riquadro riquadro--giallo">
       <h3>Nove segnali che valgono per tutte</h3>
@@ -1601,7 +1535,6 @@ CORPO_TRUFFE_COSA_FARE = """
     </div>
   </div>
 </section>
-
 <section class="sezione sezione--scura">
   <div class="contenitore">
     <h2 class="sezione__titolo" style="color:#facc15">Se la truffa &egrave; gi&agrave; avvenuta</h2>
@@ -1633,7 +1566,6 @@ CORPO_TRUFFE_COSA_FARE = """
     </div>
   </div>
 </section>
-
 <section class="sezione">
   <div class="contenitore">
     <div class="emergenza">
@@ -1697,12 +1629,13 @@ CORPO_TRUFFE_COSA_FARE = """
 </main>
 """
 
-scrivi("truffe-cosa-fare.html", pagina(
-    "truffe-cosa-fare.html",
-    "I segnali di allarme e cosa fare | GinoPizza.it",
-    "I nove segnali che attraversano tutte le truffe, le otto azioni da fare nell'ordine se è già "
-    "successo, il numero unico di emergenza 112 e i numeri per bloccare la carta.",
-    CORPO_TRUFFE_COSA_FARE))
+scrivi("vademecum-antitruffa.html", pagina(
+    "vademecum-antitruffa.html",
+    "Il vademecum antitruffa | GinoPizza.it",
+    "Tutte le truffe in una pagina: alla porta di casa, per strada, in auto, allo sportello, al telefono e "
+    "in rete. I segnali di allarme, cosa fare se \u00e8 gi\u00e0 successo, il 112 e i numeri per bloccare "
+    "la carta. Da stampare.",
+    CORPO_VADEMECUM))
 
 
 # ============================================================

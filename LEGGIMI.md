@@ -12,7 +12,7 @@ Ricognizione dei contenuti: **14 settembre 2026**.
 
 ## Che cosa contiene
 
-Sedici pagine: la pagina principale, tre indici, dieci schede e i contatti.
+Quattordici pagine: la pagina principale, tre indici, otto schede e i contatti.
 Ogni scheda ha un indirizzo suo, così si può condividere da sola.
 
 | File | Pagina |
@@ -24,11 +24,9 @@ Ogni scheda ha un indirizzo suo, così si può condividere da sola.
 | `polizia-rurale-fuochi.html` | I fuochi nei fondi, articoli 14 e 15 |
 | `polizia-rurale-distanze.html` | Le tredici distanze, dagli articoli e dalle tavole |
 | `polizia-rurale-novita.html` | Le altre novità e la storia del testo |
-| `sicurezza-territorio.html` | **Indice.** Fermezza sì, allarmismi no, e le quattro schede |
+| `sicurezza-territorio.html` | **Indice.** Fermezza sì, allarmismi no, e le due schede |
 | `controllo-di-vicinato.html` | Il protocollo con la Prefettura di Pordenone |
-| `truffe-alla-porta.html` | Le quattro truffe alla porta di casa, da stampare |
-| `truffe-fuori-casa.html` | Sei truffe fuori casa, al telefono e allo sportello |
-| `truffe-cosa-fare.html` | I segnali, cosa fare se è già successo, numeri utili |
+| `vademecum-antitruffa.html` | Il vademecum completo: truffe alla porta, fuori casa, segnali, cosa fare, numeri utili. Una pagina sola, da stampare intera |
 | `viabilita.html` | **Indice.** Il filo che tiene insieme le due schede |
 | `permesso-rosa.html` | Il permesso rosa: requisiti, documenti, uso, sanzioni |
 | `controlli-velocita.html` | I rilevatori di velocità tornati in funzione |
@@ -65,7 +63,7 @@ volta sola nel generatore, così restano identici su tutte le pagine.
 | Certificato | Let's Encrypt, valido per `ginopizza.it` |
 | Sottodominio | `www.ginopizza.it` rimanda alla radice |
 
-Verificato il 14 settembre 2026: tutte e sedici le pagine rispondono, foglio di stile,
+Verificato il 14 settembre 2026: tutte le pagine rispondono, foglio di stile,
 script e sigillo si caricano, nessun errore JavaScript, nessuno scorrimento orizzontale
 a 390 pixel.
 
