@@ -32,20 +32,14 @@ Ogni scheda ha un indirizzo suo, così si può condividere da sola.
 | `controlli-velocita.html` | I rilevatori di velocità tornati in funzione |
 | `contatti.html` | Recapiti del municipio e della Polizia Locale, appuntamenti |
 
-Più `stile.css`, `sito.js`, `sigillo.svg`, `ritratto.png`, `anteprima.png`,
-`costruisci.py`, `scontorna.py` e i file di servizio `CNAME`, `robots.txt`,
-`sitemap.xml`, `.nojekyll`.
+Più `stile.css`, `sito.js`, `sigillo.svg`, `ritratto.jpg`, `anteprima.png`,
+`costruisci.py` e i file di servizio `CNAME`, `robots.txt`, `sitemap.xml`,
+`.nojekyll`.
 
-`ritratto.png` è il ritratto a fumetto senza sfondo, in apertura della prima
-pagina. Lo produce `scontorna.py` dal disegno originale: riempie lo sfondo
-partendo dai bordi, si ferma sul contorno nero e tiene la sagoma più grande.
-Televisore e mobile restano attaccati, perché il disegno li chiude con lo
-stesso tratto nero della testa: si tagliano seguendo il bordo vero del
-soggetto, che lo script misura riga per riga cercando la prima pelle e
-tornando indietro fino al tratto. La lente degli occhiali, che ha il colore
-dello sfondo perché lo lascia vedere, viene riconosciuta come parte del
-disegno perché è stretta e chiusa dentro un altro tratto. `anteprima.png` è la scheda 1200 per 630
-che compare quando un collegamento del sito viene condiviso.
+`ritratto.jpg` è il disegno intero, con il televisore e il mobile alle spalle,
+in apertura della prima pagina: sta dentro una cornice nera spessa con l'ombra
+dura, come tutti gli altri riquadri del sito. `anteprima.png` è la scheda
+1200 per 630 che compare quando un collegamento del sito viene condiviso.
 
 Le schede figlie hanno le briciole di navigazione in alto (Home, indice, scheda)
 e il tasto di ritorno all'indice in fondo. Il registro `NOMI` dentro `costruisci.py`
