@@ -139,9 +139,12 @@ il Comune, la pagina che si sta leggendo, e il filo delle briciole che ci
 porta, ricavato dal registro `NOMI`. Le briciole di Google vengono da lì:
 sono le stesse che si vedono in alto nelle schede.
 
-Per collegare il sito a **Google Search Console** serve un codice di verifica.
-Si incolla nella costante `VERIFICA_GOOGLE` in cima a `costruisci.py` e si
-rigenera: finché resta vuota, la riga non viene nemmeno scritta nelle pagine.
+Il sito è collegato a **Google Search Console** in tutti e due i modi che
+Google accetta, così se uno dei due salta l'altro regge: la riga
+`google-site-verification` in testa alle pagine, dalla costante
+`VERIFICA_GOOGLE`, e il file dal nome buffo nella radice del sito, dalla
+costante `VERIFICA_GOOGLE_FILE`. Le due costanti stanno in cima a
+`costruisci.py`; se si svuotano, né la riga né il file vengono scritti.
 
 ## Regola sui dati
 

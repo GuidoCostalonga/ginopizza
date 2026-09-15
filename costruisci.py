@@ -12,7 +12,10 @@ CARTELLA = os.path.dirname(os.path.abspath(__file__))
 SITO = "https://ginopizza.it"
 # Il codice che Google Search Console dà per dimostrare di essere il padrone
 # del sito. Finché resta vuoto, la riga non viene nemmeno scritta nelle pagine.
-VERIFICA_GOOGLE = ""
+VERIFICA_GOOGLE = "FLS_qXNiXY0BuTUMDJRguD38PaCiNUxy--g2RdmkTjU"
+# L'altro modo di dimostrarlo: un file dal nome buffo che deve stare nella
+# radice del sito e contenere una riga sola. Vuoto, non viene scritto.
+VERIFICA_GOOGLE_FILE = "google2ddf17ec23ff1167.html"
 PRIMA_PUBBLICAZIONE = "2026-09-14"
 RICOGNIZIONE = "14 settembre 2026"
 
@@ -2368,5 +2371,8 @@ scrivi("sitemap.xml",
        + '</urlset>\n')
 
 scrivi("robots.txt", "User-agent: *\nAllow: /\n\nSitemap: %s/sitemap.xml\n" % SITO)
+
+if VERIFICA_GOOGLE_FILE:
+    scrivi(VERIFICA_GOOGLE_FILE, "google-site-verification: %s\n" % VERIFICA_GOOGLE_FILE)
 scrivi("CNAME", "ginopizza.it\n")
 scrivi(".nojekyll", "")
