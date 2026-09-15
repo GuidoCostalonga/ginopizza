@@ -44,7 +44,9 @@ License 1.1.
 
 `ritratto.jpg` è il disegno intero, con il televisore e il mobile alle spalle,
 in apertura della prima pagina: sta dentro una cornice nera spessa con l'ombra
-dura, come tutti gli altri riquadri del sito. `anteprima.png` è la scheda
+dura, come tutti gli altri riquadri del sito. Sul vetro del televisore c'è una
+scatola di pizza con il nome GinoPizza: è disegnata sopra al ritratto e cotta
+dentro l'immagine, non è un pezzo della pagina. `anteprima.png` è la scheda
 1200 per 630 che compare quando un collegamento del sito viene condiviso.
 
 Le schede figlie hanno le briciole di navigazione in alto (Home, indice, scheda)
