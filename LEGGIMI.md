@@ -33,8 +33,8 @@ Ogni scheda ha un indirizzo suo, così si può condividere da sola.
 | `contatti.html` | Recapiti del municipio e della Polizia Locale, appuntamenti |
 
 Più `stile.css`, `sito.js`, `sigillo.svg`, `ritratto.jpg`, `anteprima.png`,
-`inter.woff2`, `oswald.woff2`, `costruisci.py` e i file di servizio `CNAME`,
-`robots.txt`, `sitemap.xml`, `.nojekyll`.
+`inter.woff2`, `oswald.woff2`, `costruisci.py`, `scatola.svg`, `accendi.py` e i
+file di servizio `CNAME`, `robots.txt`, `sitemap.xml`, `.nojekyll`.
 
 I due caratteri stanno nel repository e non su un sito di terzi: aprendo una
 pagina il navigatore non contatta nessun indirizzo fuori da ginopizza.it, e di
@@ -44,9 +44,19 @@ License 1.1.
 
 `ritratto.jpg` è il disegno intero, con il televisore e il mobile alle spalle,
 in apertura della prima pagina: sta dentro una cornice nera spessa con l'ombra
-dura, come tutti gli altri riquadri del sito. Sul vetro del televisore c'è una
-scatola di pizza con il nome GinoPizza: è disegnata sopra al ritratto e cotta
-dentro l'immagine, non è un pezzo della pagina. `anteprima.png` è la scheda
+dura, come tutti gli altri riquadri del sito. Il televisore alle spalle è acceso e
+manda in onda una scatola di pizza con il nome GinoPizza: la luce e la scatola
+sono cotte dentro l'immagine, non sono pezzi della pagina.
+
+Le due cose che le costruiscono stanno nel repository. `scatola.svg` disegna
+la scatola da sola, su fondo trasparente, e serve solo perché il carattere
+Oswald lo sa comporre il navigatore. `accendi.py` fa il resto: riconosce il
+vetro dello schermo con un riempimento che parte da dentro e si ferma sul
+tratto nero, così testa e occhiali, che stanno davanti, restano fuori dalla
+maschera; poi accende il vetro, ci mette le righe del tubo catodico, il
+riflesso obliquo e l'alone che lo schermo butta su quello che ha intorno, e
+infine appoggia la scatola dentro alla maschera, in modo che dove passa la
+testa sparisca dietro invece di stamparcisi sopra. `anteprima.png` è la scheda
 1200 per 630 che compare quando un collegamento del sito viene condiviso.
 
 Le schede figlie hanno le briciole di navigazione in alto (Home, indice, scheda)

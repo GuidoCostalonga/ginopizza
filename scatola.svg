@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="170" height="170" viewBox="0 0 170 170">
+  <!-- La scatola di GinoPizza che il televisore manda in onda.
+       Va composta dal navigatore, che sa leggere il carattere Oswald,
+       e poi appoggiata sul vetro dello schermo da accendi.py. -->
+  <style>
+    @font-face{font-family:'Oswald';src:url(oswald.woff2) format('woff2');font-weight:400 700}
+    text{font-family:Oswald,Impact,sans-serif;font-weight:700;font-size:33px;fill:#120f0b}
+  </style>
+  <g transform="rotate(-3 85 85)">
+    <rect x="12" y="12" width="146" height="146" rx="7" fill="#caa468"
+          stroke="#120f0b" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M15 66 H155" stroke="#120f0b" stroke-width="5.5" fill="none"/>
+    <circle cx="85" cy="41" r="17" fill="#e8b545" stroke="#120f0b" stroke-width="5"/>
+    <circle cx="79" cy="36" r="3.3" fill="#c0392b"/>
+    <circle cx="91" cy="43" r="3.3" fill="#c0392b"/>
+    <circle cx="82" cy="48" r="2.7" fill="#c0392b"/>
+    <text x="85" y="106" text-anchor="middle">GINO</text>
+    <text x="85" y="140" text-anchor="middle">PIZZA</text>
+  </g>
+</svg>
