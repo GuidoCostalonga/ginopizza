@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1227" height="936" viewBox="0 0 1227 936">
+  <!-- Quello che il televisore manda in onda. Il disegno sta nelle coordinate
+       del ritratto intero: accendi.py lo appoggia sul vetro dello schermo e lo
+       ritaglia sulla forma vera del vetro, così il braccio e tutto quello che
+       finisce oltre il bordo dello schermo spariscono dietro alla testa. -->
+  <style>
+    @font-face{font-family:'Oswald';src:url(oswald.woff2) format('woff2');font-weight:400 700}
+    .nome{font-family:Oswald,Impact,sans-serif;font-weight:700;font-size:37px;fill:#facc15;
+          letter-spacing:.02em}
+    .t{stroke:#120f0b;stroke-width:6;stroke-linejoin:round;stroke-linecap:round}
+    .pelle{fill:#e7b78d}
+  </style>
+
+  <!-- 1. l'avambraccio: entra da destra e sparisce dietro alla testa -->
+  <path class="t" fill="#22304a" d="M318 432 L436 470 L410 556 L292 506 Z"/>
+  <path class="t" fill="#f4f4f2" d="M292 420 L338 435 L316 508 L272 490 Z"/>
+
+  <!-- 2. la mano che regge, per la maggior parte nascosta dalla pizza -->
+  <g transform="translate(4,-22)">
+    <path class="t pelle"
+          d="M212 386 q-24 6 -24 24 q0 20 26 28 l62 22 q24 8 32 -10 q8 -19 -14 -29 Z"/>
+    <g class="t pelle">
+      <path d="M204 392 q-22 -8 -30 3 q-8 12 8 21"/>
+      <path d="M223 406 q-22 -8 -30 2 q-8 11 7 20"/>
+    </g>
+  </g>
+
+  <!-- 3. la pizza, appoggiata sul palmo -->
+  <circle class="t" cx="244" cy="348" r="58" fill="#e2b16b"/>
+  <circle cx="244" cy="348" r="46" fill="#e79f38" stroke="#120f0b" stroke-width="5"/>
+  <g fill="#bd3227" stroke="#120f0b" stroke-width="3">
+    <circle cx="228" cy="328" r="9"/>
+    <circle cx="261" cy="337" r="9"/>
+    <circle cx="236" cy="367" r="9"/>
+    <circle cx="266" cy="366" r="8"/>
+    <circle cx="215" cy="353" r="7"/>
+  </g>
+  <g fill="#3f7d3a" stroke="#120f0b" stroke-width="2.6">
+    <ellipse cx="248" cy="319" rx="8" ry="5" transform="rotate(-18 248 319)"/>
+    <ellipse cx="219" cy="375" rx="7" ry="4.5" transform="rotate(24 219 375)"/>
+  </g>
+
+  <!-- 5. la fascia con il nome, come in una réclame -->
+  <rect x="171" y="243" width="212" height="48" rx="5" fill="#120f0b"/>
+  <text class="nome" x="277" y="278" text-anchor="middle">GINOPIZZA</text>
+</svg>

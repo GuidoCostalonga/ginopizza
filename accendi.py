@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Accende lo schermo del televisore e ci mette dentro la scatola di GinoPizza.
+"""Accende lo schermo del televisore e ci manda in onda la scena di GinoPizza.
 
 Il vetro dello schermo viene riconosciuto con un riempimento che parte da
 dentro e si ferma sul tratto nero: così testa e occhiali, che stanno davanti,
@@ -32,7 +32,7 @@ def vetro(a):
     return dentro
 
 
-def accendi(entrata, scatola_png, uscita):
+def accendi(entrata, scena_png, uscita):
     base = Image.open(entrata).convert("RGB")
     a = np.asarray(base).astype(np.float64)
     h, w, _ = a.shape
@@ -70,27 +70,19 @@ def accendi(entrata, scatola_png, uscita):
 
     im = Image.fromarray(np.clip(fuori, 0, 255).astype(np.uint8), "RGB").convert("RGBA")
 
-    # 5. La scatola, centrata sul vetro e ritagliata come il vetro: dove passa
-    # la testa sparisce dietro, invece di stamparcisi sopra.
-    sc = Image.open(scatola_png).convert("RGBA")
-    # Grande quanto lo consente il vetro: la testa taglia la parte destra
-    # dello schermo, quindi la scatola si appoggia al bordo sinistro e la
-    # scritta resta tutta nella parte che si vede.
-    lato = int((xs.max() - xs.min()) * 0.74)
-    sc = sc.resize((lato, lato), Image.LANCZOS)
-    px = int(xs.min()) + 2
-    py = int(cy - lato / 2)
-    strato = Image.new("RGBA", im.size, (0, 0, 0, 0))
-    strato.paste(sc, (px, py), sc)
-    alfa = np.asarray(strato)[:, :, 3].astype(float) / 255.0
-    alfa = alfa * m
-    strato = Image.merge("RGBA", (*strato.split()[:3],
-                                  Image.fromarray((alfa * 255).astype(np.uint8), "L")))
-    im.alpha_composite(strato)
+    # 5. Quello che va in onda: sta gi\u00e0 nelle coordinate del ritratto intero,
+    # quindi basta appoggiarlo e ritagliarlo sulla forma del vetro. Cos\u00ec il
+    # braccio, dove passa la testa, sparisce dietro invece di stamparcisi sopra.
+    tr = Image.open(scena_png).convert("RGBA")
+    if tr.size != im.size:
+        tr = tr.resize(im.size, Image.LANCZOS)
+    alfa = (np.asarray(tr)[:, :, 3].astype(np.float64) / 255.0) * m
+    tr = Image.merge("RGBA", (*tr.split()[:3],
+                              Image.fromarray((alfa * 255).astype(np.uint8), "L")))
+    im.alpha_composite(tr)
 
     im.convert("RGB").save(uscita, quality=95)
-    print("vetro %d px, centro (%d,%d), scatola %d px -> %s"
-          % (m.sum(), cx, cy, lato, uscita))
+    print("vetro %d px, centro (%d,%d) -> %s" % (m.sum(), cx, cy, uscita))
 
 
 if __name__ == "__main__":
