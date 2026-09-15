@@ -3,10 +3,17 @@
 Scrive file HTML puri: nessuna dipendenza esterna, nessun passaggio di compilazione.
 Si esegue con: python3 costruisci.py
 """
-import os, datetime, hashlib
+import os
+import html as entita
+import json
+import datetime, hashlib
 
 CARTELLA = os.path.dirname(os.path.abspath(__file__))
 SITO = "https://ginopizza.it"
+# Il codice che Google Search Console dà per dimostrare di essere il padrone
+# del sito. Finché resta vuoto, la riga non viene nemmeno scritta nelle pagine.
+VERIFICA_GOOGLE = ""
+PRIMA_PUBBLICAZIONE = "2026-09-14"
 RICOGNIZIONE = "14 settembre 2026"
 
 VOCI = [
@@ -196,6 +203,103 @@ CHIUSURA = """<footer class="chiusura">
 <script src="sito.js{vjs}"></script>""" % RICOGNIZIONE
 
 
+def catena(file_html):
+    """Dalla pagina principale fino a questa: serve per le briciole di Google."""
+    strada, corrente = [], file_html
+    while corrente:
+        strada.insert(0, corrente)
+        corrente = NOMI.get(corrente, (None, None))[1]
+    if strada and strada[0] != "index.html":
+        strada.insert(0, "index.html")
+    return strada
+
+
+def dati_strutturati(file_html, titolo, descrizione, url):
+    """La scheda che i motori di ricerca leggono senza doversi fidare del testo.
+
+    Dentro ci sono quattro cose: il sito, la persona che lo firma, questa
+    pagina e il filo delle briciole che ci porta. I titoli e le descrizioni
+    arrivano gi\u00e0 con le entit\u00e0 HTML dentro: qui vanno rimesse in lettere,
+    perch\u00e9 il JSON non le scioglie da solo.
+    """
+    testo = lambda t: entita.unescape(t)
+    persona = {
+        "@type": "Person",
+        "@id": SITO + "/#persona",
+        "name": "Guido Costalonga",
+        "jobTitle": "Assessore comunale",
+        "description": "Assessore alla Sicurezza, Protezione Civile, Patrimonio e "
+                       "Mobilit\u00e0 Sostenibile del Comune di Roveredo in Piano",
+        "url": SITO + "/",
+        "image": SITO + "/ritratto.jpg",
+        "sameAs": ["https://costalonga.org"],
+        "worksFor": {
+            "@type": "GovernmentOrganization",
+            "name": "Comune di Roveredo in Piano",
+            "url": "https://comune.roveredoinpiano.pn.it/",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Via G. Carducci, 11",
+                "postalCode": "33080",
+                "addressLocality": "Roveredo in Piano",
+                "addressRegion": "PN",
+                "addressCountry": "IT",
+            },
+        },
+        "homeLocation": {
+            "@type": "Place",
+            "name": "Roveredo in Piano",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Roveredo in Piano",
+                "addressRegion": "PN",
+                "addressCountry": "IT",
+            },
+        },
+    }
+    sito = {
+        "@type": "WebSite",
+        "@id": SITO + "/#sito",
+        "name": "GinoPizza.it",
+        "alternateName": "Guido Costalonga, assessore a Roveredo in Piano",
+        "url": SITO + "/",
+        "inLanguage": "it-IT",
+        "publisher": {"@id": SITO + "/#persona"},
+    }
+    pag = {
+        "@type": "WebPage",
+        "@id": url + "#pagina",
+        "url": url,
+        "name": testo(titolo),
+        "description": testo(descrizione),
+        "inLanguage": "it-IT",
+        "isPartOf": {"@id": SITO + "/#sito"},
+        "about": {"@id": SITO + "/#persona"},
+        "datePublished": PRIMA_PUBBLICAZIONE,
+        "dateModified": datetime.date.today().isoformat(),
+        "primaryImageOfPage": {"@type": "ImageObject", "url": SITO + "/anteprima.png",
+                               "width": 1200, "height": 630},
+    }
+    grafo = [sito, persona, pag]
+    strada = catena(file_html)
+    if len(strada) > 1:
+        voci = []
+        for n, f in enumerate(strada, 1):
+            voci.append({
+                "@type": "ListItem",
+                "position": n,
+                "name": NOMI[f][0],
+                "item": SITO + "/" + ("" if f == "index.html" else f),
+            })
+        briciole_dati = {"@type": "BreadcrumbList", "@id": url + "#briciole",
+                         "itemListElement": voci}
+        pag["breadcrumb"] = {"@id": url + "#briciole"}
+        grafo.append(briciole_dati)
+    fuori = json.dumps({"@context": "https://schema.org", "@graph": grafo},
+                       ensure_ascii=False, separators=(",", ":"))
+    return '<script type="application/ld+json">%s</script>' % fuori.replace("</", "<\\/")
+
+
 def pagina(file_html, titolo_scheda, descrizione, corpo, emoji_og="\U0001F355"):
     url = SITO + "/" + ("" if file_html == "index.html" else file_html)
     return """<!doctype html>
@@ -209,8 +313,9 @@ location.replace('https://'+location.host+location.pathname+location.search+loca
 <title>{ts}</title>
 <meta name="description" content="{d}">
 <meta name="author" content="Guido Costalonga">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 <meta name="theme-color" content="#0038ff">
-<link rel="canonical" href="{u}">
+<link rel="canonical" href="{u}">{gsc}
 <meta property="og:type" content="website">
 <meta property="og:locale" content="it_IT">
 <meta property="og:site_name" content="GinoPizza.it">
@@ -227,6 +332,7 @@ location.replace('https://'+location.host+location.pathname+location.search+loca
 <meta name="twitter:image" content="{s}/anteprima.png">
 <link rel="icon" href="sigillo.svg{vsvg}" type="image/svg+xml">
 <link rel="stylesheet" href="stile.css{vcss}">
+{dati}
 </head>
 <body>
 {barra}
@@ -237,6 +343,9 @@ location.replace('https://'+location.host+location.pathname+location.search+loca
 </body>
 </html>
 """.format(ts=titolo_scheda, d=descrizione, u=url, s=SITO,
+           gsc=('\n<meta name="google-site-verification" content="%s">' % VERIFICA_GOOGLE)
+               if VERIFICA_GOOGLE else "",
+           dati=dati_strutturati(file_html, titolo_scheda, descrizione, url),
            vcss=impronta("stile.css"), vjs=impronta("sito.js"), vsvg=impronta("sigillo.svg"),
            barra=barra(file_html), bric=briciole(file_html),
            cond=condivisione(titolo_scheda, file_html),
@@ -404,9 +513,9 @@ CORPO_INDEX = """
 
 scrivi("index.html", pagina(
     "index.html",
-    "GinoPizza.it | Sì, è ginopizza.it. No, non è una pizzeria",
-    "Il sito dell'assessore Guido Costalonga, Roveredo in Piano. Polizia rurale, controllo di vicinato, "
-    "vademecum antitruffa, parcheggi rosa, controlli di velocità e Protezione Civile. Atti e date, non promesse.",
+    "Guido Costalonga, assessore a Roveredo in Piano | GinoPizza.it",
+    "Polizia rurale, controllo di vicinato, truffe, permesso rosa e controlli di velocità a "
+    "Roveredo in Piano. Atti e date dell'assessore, non promesse.",
     CORPO_INDEX))
 
 # ============================================================
@@ -547,9 +656,9 @@ CORPO_RURALE = """
 
 scrivi("polizia-rurale.html", pagina(
     "polizia-rurale.html",
-    "Regolamento di polizia rurale | GinoPizza.it",
-    "Il regolamento di polizia rurale di Roveredo in Piano, in vigore dal 13 settembre 2026: 84 articoli "
-    "approvati all'unanimità il 22 giugno 2026. Diffida amministrativa, obblighi, fuochi, distanze.",
+    "Regolamento di polizia rurale | Roveredo in Piano",
+    "Il regolamento di polizia rurale di Roveredo in Piano, in vigore dal 13 settembre 2026: 84 "
+    "articoli, diffida amministrativa, obblighi, fuochi, distanze.",
     CORPO_RURALE))
 
 
@@ -621,7 +730,7 @@ CORPO_DIFFIDA = """
 
 scrivi("polizia-rurale-diffida.html", pagina(
     "polizia-rurale-diffida.html",
-    "La diffida amministrativa | GinoPizza.it",
+    "La diffida amministrativa, articolo 4 | Roveredo in Piano",
     "L'articolo 4 del regolamento di polizia rurale di Roveredo in Piano: dieci giorni per sanare, una "
     "volta sola, e che cosa succede a chi non ottempera.",
     CORPO_DIFFIDA))
@@ -763,9 +872,9 @@ CORPO_OBBLIGHI = """
 
 scrivi("polizia-rurale-obblighi.html", pagina(
     "polizia-rurale-obblighi.html",
-    "Gli obblighi del regolamento di polizia rurale | GinoPizza.it",
-    "Sfalci, fossi e canali, siepi e alberi sulle strade, deflusso delle acque e arature a Roveredo in "
-    "Piano: chi deve fare che cosa, entro quando e quanto costa non farlo.",
+    "Sfalci, fossi e siepi: gli obblighi | Roveredo in Piano",
+    "Sfalci, fossi e canali, siepi e alberi sulle strade, deflusso delle acque e arature a Roveredo "
+    "in Piano: chi fa che cosa, entro quando, quanto costa non farlo.",
     CORPO_OBBLIGHI))
 
 
@@ -860,9 +969,9 @@ CORPO_FUOCHI = """
 
 scrivi("polizia-rurale-fuochi.html", pagina(
     "polizia-rurale-fuochi.html",
-    "I fuochi nei fondi | GinoPizza.it",
-    "Articolo 14 del regolamento di polizia rurale di Roveredo in Piano: dove e quando si può accendere "
-    "un fuoco agricolo, con quali distanze e cautele, e che cosa non si brucia mai.",
+    "Fuochi nei fondi agricoli, articoli 14 e 15 | Roveredo in Piano",
+    "Articolo 14 del regolamento di polizia rurale di Roveredo in Piano: dove e quando si accende un "
+    "fuoco agricolo, con quali distanze, e che cosa non si brucia mai.",
     CORPO_FUOCHI))
 
 
@@ -949,9 +1058,9 @@ CORPO_DISTANZE = """
 
 scrivi("polizia-rurale-distanze.html", pagina(
     "polizia-rurale-distanze.html",
-    "Le distanze del regolamento di polizia rurale | GinoPizza.it",
-    "Tredici distanze minime del regolamento di polizia rurale di Roveredo in Piano: fossi, alberi, siepi, "
-    "apiari, vigneti e frutteti, ricoveri zootecnici, con l'articolo di riferimento.",
+    "Le tredici distanze da rispettare | Roveredo in Piano",
+    "Le tredici distanze minime del regolamento di polizia rurale di Roveredo in Piano: fossi, alberi, "
+    "siepi, apiari, vigneti, frutteti, ricoveri zootecnici.",
     CORPO_DISTANZE))
 
 
@@ -1030,9 +1139,9 @@ CORPO_NOVITA = """
 
 scrivi("polizia-rurale-novita.html", pagina(
     "polizia-rurale-novita.html",
-    "Le novità del regolamento di polizia rurale | GinoPizza.it",
-    "Il patto di buon vicinato sui nuovi impianti di vigneti e frutteti, i prati stabili resi più semplici, "
-    "e la storia di un testo cominciato da un'amministrazione e finito da un'altra.",
+    "Novità del regolamento di polizia rurale | Roveredo in Piano",
+    "Il patto di buon vicinato sui nuovi vigneti e frutteti e i prati stabili resi più semplici, nel "
+    "regolamento di polizia rurale di Roveredo in Piano.",
     CORPO_NOVITA))
 
 
@@ -1121,9 +1230,9 @@ CORPO_SICUREZZA = """
 
 scrivi("sicurezza-territorio.html", pagina(
     "sicurezza-territorio.html",
-    "Sicurezza del territorio | GinoPizza.it",
-    "Controllo di vicinato a Roveredo in Piano e vademecum antitruffa: le truffe alla porta, quelle fuori "
-    "casa, i segnali di allarme e cosa fare se è già successo. Numero unico di emergenza 112.",
+    "Sicurezza e truffe | Roveredo in Piano",
+    "Controllo di vicinato a Roveredo in Piano e vademecum antitruffa: le truffe alla porta e fuori "
+    "casa, i segnali di allarme, cosa fare se è già successo.",
     CORPO_SICUREZZA))
 
 
@@ -1283,10 +1392,9 @@ CORPO_VICINATO = """
 
 scrivi("controllo-di-vicinato.html", pagina(
     "controllo-di-vicinato.html",
-    "Il controllo di vicinato | GinoPizza.it",
-    "Il controllo di vicinato a Roveredo in Piano, con il protocollo d'intesa con la Prefettura di "
-    "Pordenone: che cosa si segnala, come si costituisce un gruppo, i compiti del coordinatore. "
-    "Nessuna ronda, nessun pattugliamento.",
+    "Controllo di vicinato | Roveredo in Piano",
+    "Il controllo di vicinato a Roveredo in Piano, con il protocollo della Prefettura di Pordenone: "
+    "come si aderisce, che cosa si segnala, i compiti del coordinatore.",
     CORPO_VICINATO))
 
 
@@ -1656,10 +1764,9 @@ CORPO_VADEMECUM = """
 
 scrivi("vademecum-antitruffa.html", pagina(
     "vademecum-antitruffa.html",
-    "Il vademecum antitruffa | GinoPizza.it",
-    "Tutte le truffe in una pagina: alla porta di casa, per strada, in auto, allo sportello, al telefono e "
-    "in rete. I segnali di allarme, cosa fare se \u00e8 gi\u00e0 successo, il 112 e i numeri per bloccare "
-    "la carta. Da stampare.",
+    "Vademecum antitruffa: riconoscerle e difendersi | GinoPizza.it",
+    "Le truffe alla porta di casa, per strada, in auto, allo sportello, al telefono e in rete: i "
+    "segnali, cosa fare se \u00e8 gi\u00e0 successo, il 112. Da stampare.",
     CORPO_VADEMECUM))
 
 
@@ -1744,9 +1851,9 @@ CORPO_VIABILITA = """
 
 scrivi("viabilita.html", pagina(
     "viabilita.html",
-    "Viabilità | GinoPizza.it",
-    "Permesso rosa e controlli di velocità a Roveredo in Piano: gli stalli riservati a chi ne ha diritto e "
-    "i rilevatori tornati in funzione, segnalati e non nascosti.",
+    "Viabilità e permesso rosa | Roveredo in Piano",
+    "Permesso rosa e controlli di velocità a Roveredo in Piano: gli stalli riservati a chi ne ha "
+    "diritto e i rilevatori tornati in funzione, segnalati e non nascosti.",
     CORPO_VIABILITA))
 
 
@@ -1907,9 +2014,9 @@ CORPO_ROSA = """
 
 scrivi("permesso-rosa.html", pagina(
     "permesso-rosa.html",
-    "Il permesso rosa | GinoPizza.it",
-    "Permesso rosa a Roveredo in Piano: chi può chiederlo, documenti e marche da bollo, dove si consegna e "
-    "si ritira, limite di tre ore con disco orario, scadenze e sanzioni dell'articolo 188 bis.",
+    "Permesso rosa: come ottenerlo | Roveredo in Piano",
+    "Permesso rosa a Roveredo in Piano: chi può chiederlo, documenti e marche da bollo, dove si "
+    "consegna, tre ore con disco orario, scadenze e sanzioni.",
     CORPO_ROSA))
 
 
@@ -2013,9 +2120,9 @@ CORPO_VELOCITA = """
 
 scrivi("controlli-velocita.html", pagina(
     "controlli-velocita.html",
-    "I controlli di velocità | GinoPizza.it",
+    "Controlli di velocità | Roveredo in Piano",
     "I rilevatori di velocità di Roveredo in Piano sono tornati in funzione: perché erano fermi, come "
-    "funzionano i controlli, postazioni segnalate e calendario reso noto in anticipo.",
+    "funzionano, postazioni segnalate e calendario noto in anticipo.",
     CORPO_VELOCITA))
 
 
@@ -2238,9 +2345,9 @@ CORPO_CONTATTI = """
 
 scrivi("contatti.html", pagina(
     "contatti.html",
-    "Ricevimento e contatti | GinoPizza.it",
-    "Recapiti del Comune di Roveredo in Piano, prenotazione appuntamento in municipio, PEC, protocollo e "
-    "contatto diretto dell'assessore Guido Costalonga per le segnalazioni.",
+    "Contatti e ricevimento dell'assessore | Roveredo in Piano",
+    "Recapiti del Comune di Roveredo in Piano, ricevimento il lunedì dalle 14 alle 15 su prenotazione, "
+    "PEC, protocollo e contatto diretto dell'assessore.",
     CORPO_CONTATTI))
 
 

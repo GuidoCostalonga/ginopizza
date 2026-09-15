@@ -115,6 +115,34 @@ Le Pagine GitHub ripubblicano da sole a ogni invio sul ramo `main`.
 | AAAA | @ | 2606:50c0:8000::153, 2606:50c0:8001::153, 2606:50c0:8002::153, 2606:50c0:8003::153 |
 | CNAME | www | guidocostalonga.github.io. |
 
+## Come il sito si fa trovare
+
+Ogni pagina porta in testa quello che serve ai motori di ricerca.
+
+| Cosa | Dove |
+|---|---|
+| Titolo e descrizione, diversi su ogni pagina | `<title>` e `<meta name="description">` |
+| Indirizzo ufficiale della pagina, contro i doppioni | `<link rel="canonical">` |
+| Permesso di indicizzare, con anteprima grande | `<meta name="robots" content="index, follow, max-image-preview:large">` |
+| Scheda per le reti sociali | `og:` e `twitter:`, con `anteprima.png` 1200 per 630 |
+| Dati strutturati | `<script type="application/ld+json">` |
+| Elenco delle pagine | `sitemap.xml`, dichiarata in `robots.txt` |
+
+I titoli sono scritti per come si cerca davvero: l'argomento davanti e il
+nome del paese dopo, perché chi cerca scrive «regolamento polizia rurale
+Roveredo in Piano», non il nome del sito. Le descrizioni stanno sotto i 165
+caratteri, che è quanto Google ne mostra.
+
+I dati strutturati li costruisce `dati_strutturati()` dentro `costruisci.py`.
+Dichiarano quattro cose: il sito, la persona che lo firma con la sua carica e
+il Comune, la pagina che si sta leggendo, e il filo delle briciole che ci
+porta, ricavato dal registro `NOMI`. Le briciole di Google vengono da lì:
+sono le stesse che si vedono in alto nelle schede.
+
+Per collegare il sito a **Google Search Console** serve un codice di verifica.
+Si incolla nella costante `VERIFICA_GOOGLE` in cima a `costruisci.py` e si
+rigenera: finché resta vuota, la riga non viene nemmeno scritta nelle pagine.
+
 ## Regola sui dati
 
 Su questo sito non si scrive un dato che non sia stato letto su una fonte ufficiale.
