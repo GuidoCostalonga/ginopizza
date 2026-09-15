@@ -470,7 +470,7 @@ CORPO_INDEX = """
         <div class="manifesto__corpo">
           <h3>Parcheggi rosa e velocit&agrave;</h3>
           <p>Il permesso rosa: chi lo chiede, che cosa serve, quanto dura la sosta. E i rilevatori di
-             velocit&agrave; rimessi in funzione, segnalati e non nascosti.</p>
+             velocit&agrave;, gli autovelox, rimessi in funzione e segnalati, non nascosti.</p>
           <div><span class="timbro"><span aria-hidden="true">&#9889;</span>
             Velocit&agrave; moderata o multa garantita</span></div>
           <span class="manifesto__vai">Vai alla viabilit&agrave; &rarr;</span>
@@ -1804,8 +1804,8 @@ CORPO_VIABILITA = """
               "Le sanzioni dell'articolo 188 bis")) \
   + scheda("controlli-velocita.html", "02", "Comunicato del 10 agosto 2026", "&#9889;",
            "I controlli di velocit&agrave;",
-           "I rilevatori sono tornati in funzione. Postazioni segnalate e non nascoste, calendario reso "
-           "noto in anticipo, apparecchi omologati e tarati.",
+           "Gli autovelox sono tornati in funzione. Postazioni segnalate e non nascoste, calendario "
+           "reso noto in anticipo, apparecchi omologati e tarati.",
            ("Perch&eacute; erano fermi e perch&eacute; ripartono",
             "Come e quando si controlla",
             "Le parole dell'assessore e del comandante")) + """    </div>
@@ -1853,7 +1853,7 @@ scrivi("viabilita.html", pagina(
     "viabilita.html",
     "Viabilità e permesso rosa | Roveredo in Piano",
     "Permesso rosa e controlli di velocità a Roveredo in Piano: gli stalli riservati a chi ne ha "
-    "diritto e i rilevatori tornati in funzione, segnalati e non nascosti.",
+    "diritto e gli autovelox tornati in funzione, segnalati e non nascosti.",
     CORPO_VIABILITA))
 
 
@@ -2029,8 +2029,9 @@ CORPO_VELOCITA = """
     <h1><span aria-hidden="true">&#9889;</span> I controlli<br>di velocit&agrave;</h1>
     <p class="testata__sommario">Piede pi&ugrave; leggero sull'acceleratore. &Egrave; questo, ridotto
        all'osso, quello che il Comune chiede a chi guida lungo le strade che tagliano il paese, dove il
-       traffico di passaggio tende a correre pi&ugrave; del dovuto. Non un'operazione lampo: un presidio
-       destinato a durare.</p>
+       traffico di passaggio tende a correre pi&ugrave; del dovuto. I rilevatori di velocit&agrave;,
+       quelli che tutti chiamano autovelox, sono di nuovo in funzione: non un'operazione lampo, ma un
+       presidio destinato a durare.</p>
   </div>
 </header>
 
@@ -2041,7 +2042,7 @@ CORPO_VELOCITA = """
     <div class="griglia griglia--2">
       <div class="riquadro">
         <h3><span aria-hidden="true">&#128260;</span> Perch&eacute; si riprende solo adesso</h3>
-        <p>Una sentenza aveva stabilito che gli apparecchi privi di regolare omologazione non potessero
+        <p>Una sentenza aveva stabilito che gli autovelox privi di regolare omologazione non potessero
            essere usati per elevare sanzioni. Questo aveva di fatto congelato i controlli un po' ovunque,
            non soltanto qui.</p>
         <p>Il nodo si &egrave; sciolto grazie all'intervento normativo del governo nazionale, che ha aperto
@@ -2120,9 +2121,9 @@ CORPO_VELOCITA = """
 
 scrivi("controlli-velocita.html", pagina(
     "controlli-velocita.html",
-    "Controlli di velocità | Roveredo in Piano",
-    "I rilevatori di velocità di Roveredo in Piano sono tornati in funzione: perché erano fermi, come "
-    "funzionano, postazioni segnalate e calendario noto in anticipo.",
+    "Controlli di velocità e autovelox | Roveredo in Piano",
+    "Gli autovelox di Roveredo in Piano sono tornati in funzione: perché erano fermi, come funzionano "
+    "i controlli, postazioni segnalate e calendario noto in anticipo.",
     CORPO_VELOCITA))
 
 
