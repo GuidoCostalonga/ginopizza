@@ -267,7 +267,7 @@ CORPO_INDEX = """
            fatto. La pizza la fanno meglio in paese: qui si fa il resto.</p>
       </div>
       <img class="ritratto" src="ritratto.jpg""" + impronta("ritratto.jpg") + """" width="900" height="687"
-           alt="Ritratto a fumetto di Guido Costalonga: testa pelata, barba, occhiali dalla montatura spessa, giacca blu con la coccarda tricolore. Alle spalle un televisore a tubo catodico con le antenne, un mobiletto e una parete di legno.">
+           alt="Ritratto a fumetto di Guido Costalonga: testa pelata, barba, occhiali dalla montatura spessa, giacca blu con la coccarda tricolore. Alle spalle un televisore a tubo catodico con le antenne, che manda in onda una scatola di pizza con scritto GinoPizza, un mobiletto e una parete di legno.">
     </div>
 
     <div style="text-align:center;margin:-14px 0 34px">
