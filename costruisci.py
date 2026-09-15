@@ -2066,9 +2066,11 @@ CORPO_CONTATTI = """
 
       <div class="riquadro riquadro--blu">
         <h3><span aria-hidden="true">&#128197;</span> Appuntamento in municipio</h3>
-        <p>Il ricevimento avviene su appuntamento, cos&igrave; chi arriva trova qualcuno che ha il tempo di
-           ascoltarlo davvero e non cinque minuti fra una riunione e l'altra.</p>
-        <p><strong>Due modi per fissarlo:</strong></p>
+        <p>Il giorno di ricevimento &egrave; il <strong>luned&igrave; dalle 14 alle 15</strong>, sempre su
+           prenotazione: cos&igrave; nessuno resta seduto in corridoio ad aspettare per niente e chi arriva
+           trova qualcuno che ha il tempo di ascoltarlo davvero, non cinque minuti fra una riunione e
+           l'altra.</p>
+        <p><strong>Due modi per prenotare:</strong></p>
         <ul class="elenco-timbri">
           <li><span class="icona" aria-hidden="true">&#128222;</span>
             <div><strong>Centralino del municipio.</strong> Telefono 0434 388611, negli orari di apertura
@@ -2077,9 +2079,9 @@ CORPO_CONTATTI = """
             <div><strong>Messaggio diretto.</strong> Scrivi su WhatsApp al numero qui sotto e si trova
             la data.</div></li>
         </ul>
-        <p style="margin-top:14px">Non c'&egrave; un giorno fisso di ricevimento: si concorda di volta in
-           volta, cos&igrave; l'orario si adatta a chi lavora e non il contrario. Scrivi e si trova
-           il momento.</p>
+        <p style="margin-top:14px">Se il luned&igrave; pomeriggio non va bene, basta dirlo: in caso di
+           necessit&agrave; ci si mette d'accordo su un altro momento. L'orario si adatta a chi lavora,
+           non il contrario.</p>
       </div>
 
       <div class="riquadro riquadro--blu">
