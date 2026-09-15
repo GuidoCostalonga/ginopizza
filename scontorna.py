@@ -21,53 +21,94 @@ SOGLIA_SCURO = 25       # solo il nero pieno è contorno: lo sfondo qui è scuro
 TOLLERANZA = 999        # il colore non vincola: a fermare il riempimento basta il contorno
 
 
-# Il taglio a sinistra vale per questo ritratto: lo sfondo freddo sta a
-# sinistra, il soggetto è caldo di pelle. I due numeri qui sotto dicono da
-# dove partire a cercare e fin dove guardare.
-PARTENZA = 350          # prima colonna utile: più a sinistra c'è solo sfondo
-ARRIVO = 900            # oltre questa colonna il soggetto c'è di sicuro
-FINE_OCCHIALI = 940     # ultima riga in cui il bordo è la montatura
-FINE_TAGLIO = 1010      # sotto questa riga non resta nulla da togliere
-BORDO_BARBA = 620       # bordo del soggetto sotto gli occhiali
+# Il taglio a sinistra: lo sfondo di questo disegno sta a sinistra del
+# personaggio, e il disegno chiude televisore e mobile con lo stesso tratto
+# nero della testa, quindi nessun assottigliamento li stacca. Si taglia
+# seguendo il bordo vero del soggetto, misurato riga per riga.
+QUOTA_ARRIVO = 0.62     # fin dove cercare il soggetto, in frazione di larghezza
+FILA_MINIMA = 10        # quanti pixel di seguito servono per dire "questa è pelle"
+ROSSO_SU_BLU = 45       # quanto il rosso supera il blu nella pelle e nella barba
+ROSSO_SU_VERDE = 20     # quanto il rosso supera il verde: il legno del mobile non ci arriva
+SOGLIA_TRATTO = 70      # sotto questa luce si è dentro al tratto nero del contorno
+CELLA_CHIUSA = 200      # larghezza massima di una cella chiusa dentro il disegno
+CELLA_FREDDA = 25       # una cella da scavalcare non ha il rosso sopra il blu
+SALTI = 3               # quante celle chiuse di seguito si possono scavalcare
+LISCIO = 40             # mezza finestra della statistica che liscia il bordo
+QUANTILE = 50           # la mediana: regge anche cinquanta righe confuse di seguito
 
 
-def taglia_a_sinistra(a, lum, soggetto):
-    """Toglie dalla sagoma tutto ciò che sta a sinistra del bordo vero."""
-    h, w = soggetto.shape
-    caldo = (a[:, :, 0] - a[:, :, 2]) > 25
+def fasce(riga_scura):
+    """Spezza una riga nelle sue fasce: (inizio, fine compreso, scura)."""
+    out, x, w = [], 0, len(riga_scura)
+    while x < w:
+        s = bool(riga_scura[x]); i = x
+        while x < w and bool(riga_scura[x]) == s:
+            x += 1
+        out.append((i, x - 1, s))
+    return out
+
+
+def bordo_del_soggetto(a, lum):
+    """Per ogni riga dice dove comincia il soggetto, oppure -1 se non c'è.
+
+    Il segno della pelle e della barba è il rosso che supera insieme il blu e
+    il verde: il grigio del televisore non lo ha, e il legno del mobile ha sì
+    il rosso sopra il blu ma non sopra il verde, quindi non viene scambiato
+    per personaggio.
+
+    Trovata la prima pelle si cammina verso sinistra di fascia in fascia. Il
+    tratto nero si attraversa sempre, perché è il contorno del disegno. Una
+    fascia chiara si attraversa solo se è stretta, fredda di colore e chiusa
+    da un altro tratto: è il caso della lente degli occhiali, che lascia
+    vedere lo sfondo ma appartiene al soggetto. Lo sfondo vero è largo, e il
+    legno del mobile ha il rosso sopra il blu: lì il cammino si ferma.
+    """
+    h, w, _ = a.shape
+    r, g, b = a[:, :, 0], a[:, :, 1], a[:, :, 2]
+    pelle = ((r - b) > ROSSO_SU_BLU) & ((r - g) > ROSSO_SU_VERDE)
+    scuro = lum < SOGLIA_TRATTO
+    arrivo = int(w * QUOTA_ARRIVO)
     bordo = np.full(h, -1)
     for y in range(h):
-        x0, fila = None, 0
-        for x in range(PARTENZA, min(ARRIVO, w)):
-            if caldo[y, x]:
+        x, fila = -1, 0
+        for i in range(arrivo):
+            if pelle[y, i]:
                 fila += 1
-                if fila >= 8:
-                    x0 = x - 7
+                if fila >= FILA_MINIMA:
+                    x = i - FILA_MINIMA + 1
                     break
             else:
                 fila = 0
-        if x0 is None:
+        if x < 0:
             continue
-        while x0 > PARTENZA and lum[y, x0 - 1] < 70:
-            x0 -= 1
-        bordo[y] = x0
-    # una mediana mobile toglie i salti dove passa la linea del mobile
+        fs = fasce(scuro[y])
+        i = 0
+        while i < len(fs) and fs[i][1] < x:
+            i += 1
+        while i >= 0 and not fs[i][2]:      # torna alla prima fascia scura
+            i -= 1
+        if i < 0:
+            continue
+        for _ in range(SALTI):
+            if i - 1 < 0:
+                break
+            p, q, _s = fs[i - 1]
+            freddo = int(np.mean(r[y, p:q + 1]) - np.mean(b[y, p:q + 1])) < CELLA_FREDDA
+            if (q - p + 1) <= CELLA_CHIUSA and freddo and i - 2 >= 0:
+                i -= 2                      # era una cella chiusa: si scavalca
+            else:
+                break                       # era lo sfondo: il bordo è questo
+        bordo[y] = fs[i][0]
+    # Una statistica mobile toglie i salti delle righe in cui il bordo passa
+    # dietro a una linea scura dello sfondo. Non si prende la mediana ma il
+    # primo quarto: in caso di dubbio il taglio resta più a sinistra, cioè
+    # lascia un filo di sfondo invece di mangiare un pezzo di disegno.
     liscio = bordo.copy()
     for y in range(h):
-        finestra = [v for v in bordo[max(0, y - 15):y + 16] if v > 0]
-        if finestra:
-            liscio[y] = int(np.median(finestra))
-    for y in range(PARTENZA, min(FINE_TAGLIO, h)):
-        if y <= FINE_OCCHIALI:
-            taglio = liscio[y]
-        elif y < FINE_OCCHIALI + 10:
-            passo = (y - FINE_OCCHIALI) / 10.0
-            taglio = int(liscio[FINE_OCCHIALI] + (BORDO_BARBA - liscio[FINE_OCCHIALI]) * passo)
-        else:
-            taglio = BORDO_BARBA
-        if taglio > 0:
-            soggetto[y, :taglio] = False
-    return soggetto
+        finestra = [v for v in bordo[max(0, y - LISCIO):y + LISCIO + 1] if v >= 0]
+        if finestra and bordo[y] >= 0:
+            liscio[y] = int(np.percentile(finestra, QUANTILE))
+    return liscio
 
 
 def scontorna(entrata, uscita, margine=14):
@@ -118,11 +159,19 @@ def scontorna(entrata, uscita, margine=14):
                 sfondo[ny, nx] = True
                 coda.append((ny, nx))
 
-    # 2. Della parte rimasta si tiene solo la sagoma più grande: il personaggio.
+    # 2. Taglio a sinistra lungo il bordo vero del soggetto: così televisore e
+    # mobile si staccano dal personaggio prima ancora di contare le sagome.
+    davanti = ~sfondo
+    bordo = bordo_del_soggetto(a, lum)
+    for y in range(h):
+        if bordo[y] > 0:
+            davanti[y, :bordo[y]] = False
+    sfondo = ~davanti
+
+    # 3. Della parte rimasta si tiene solo la sagoma più grande: il personaggio.
     # Prima però si assottiglia la maschera: così i fili di pochi pixel che
     # tengono ancora attaccato il televisore si spezzano, mentre la figura,
     # che è spessa, resta tutta intera. Alla fine si rigonfia di altrettanto.
-    davanti = ~sfondo
     m = Image.fromarray((davanti * 255).astype(np.uint8), "L")
     m = m.filter(ImageFilter.MinFilter(2 * EROSIONE + 1))
     davanti = np.asarray(m) > 127
@@ -148,20 +197,12 @@ def scontorna(entrata, uscita, margine=14):
     print("sagome trovate: %d | personaggio: %d pixel (%.1f%% del quadro)"
           % (n, dim_migliore, 100.0 * dim_migliore / (h * w)))
 
-    # 2bis. Del televisore e del mobile resta la parte che tocca il disegno:
-    # il loro contorno, dove sono nascosti dalla testa, è lo stesso contorno
-    # della testa, quindi nessun assottigliamento li stacca. Si tagliano
-    # seguendo il bordo vero del soggetto, misurato riga per riga: dal grigio
-    # dello sfondo si cammina verso destra fino alla prima pelle e si torna
-    # indietro fino a dove comincia il nero del contorno.
-    soggetto = taglia_a_sinistra(a, lum, soggetto)
-
-    # 3. Trasparenza con bordo ammorbidito, per non lasciare la scaletta.
+    # 4. Trasparenza con bordo ammorbidito, per non lasciare la scaletta.
     alfa = Image.fromarray((soggetto * 255).astype(np.uint8), "L")
     alfa = alfa.filter(ImageFilter.GaussianBlur(0.7))
     fuori = Image.merge("RGBA", (*im.split(), alfa))
 
-    # 4. Ritaglio sul personaggio, con un margine di respiro.
+    # 5. Ritaglio sul personaggio, con un margine di respiro.
     ys, xs = np.where(soggetto)
     y1, y2 = max(0, ys.min() - margine), min(h, ys.max() + 1 + margine)
     x1, x2 = max(0, xs.min() - margine), min(w, xs.max() + 1 + margine)

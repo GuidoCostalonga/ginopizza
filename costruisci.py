@@ -265,7 +265,7 @@ CORPO_INDEX = """
         <p>Qui non si sforna niente. Si firmano atti, si fissano date e si risponde di quello che si &egrave;
            fatto. La pizza la fanno meglio in paese: qui si fa il resto.</p>
       </div>
-      <img class="ritratto" src="ritratto.png""" + impronta("ritratto.png") + """" width="760" height="838"
+      <img class="ritratto" src="ritratto.png""" + impronta("ritratto.png") + """" width="760" height="840"
            alt="Ritratto a fumetto di Guido Costalonga: testa pelata, barba, occhiali dalla montatura spessa, giacca blu con la coccarda tricolore.">
     </div>
 

@@ -38,9 +38,13 @@ Più `stile.css`, `sito.js`, `sigillo.svg`, `ritratto.png`, `anteprima.png`,
 
 `ritratto.png` è il ritratto a fumetto senza sfondo, in apertura della prima
 pagina. Lo produce `scontorna.py` dal disegno originale: riempie lo sfondo
-partendo dai bordi, si ferma sul contorno nero, tiene la sagoma più grande e
-infine taglia il televisore e il mobile, che il disegno attacca al soggetto
-con lo stesso tratto della testa. `anteprima.png` è la scheda 1200 per 630
+partendo dai bordi, si ferma sul contorno nero e tiene la sagoma più grande.
+Televisore e mobile restano attaccati, perché il disegno li chiude con lo
+stesso tratto nero della testa: si tagliano seguendo il bordo vero del
+soggetto, che lo script misura riga per riga cercando la prima pelle e
+tornando indietro fino al tratto. La lente degli occhiali, che ha il colore
+dello sfondo perché lo lascia vedere, viene riconosciuta come parte del
+disegno perché è stretta e chiusa dentro un altro tratto. `anteprima.png` è la scheda 1200 per 630
 che compare quando un collegamento del sito viene condiviso.
 
 Le schede figlie hanno le briciole di navigazione in alto (Home, indice, scheda)
