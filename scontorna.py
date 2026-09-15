@@ -14,10 +14,18 @@ from collections import deque
 import numpy as np
 from PIL import Image, ImageFilter
 
+# Le misure in pixel qui sotto valgono per un disegno largo LARGHEZZA_BASE;
+# su un disegno di dimensione diversa vengono riscalate in proporzione, così
+# lo stesso programma lavora tanto sull'originale grande quanto su una copia
+# ridotta.
+LARGHEZZA_BASE = 2400
 CORNICE = 45           # cornice scura da togliere prima di cominciare
 BANDA = 35             # entro quanti pixel dai lati il nero è cornice e non disegno
 EROSIONE = 5           # di quanto assottigliare per spezzare i fili sottili
-SOGLIA_SCURO = 25       # solo il nero pieno è contorno: lo sfondo qui è scuro quanto un'ombra
+ORLO = 50              # quanto vicino al bordo deve arrivare una zona per dirla sfondo
+PELLE_CHIARA = 110     # sotto questa luce una zona calda \u00e8 legno, non pelle
+SCURO_GIACCA = 55      # sopra questa luce una zona scura non \u00e8 la giacca
+SOGLIA_SCURO = 40       # sotto questa luce si è nel contorno o in una parte scura del disegno
 TOLLERANZA = 999        # il colore non vincola: a fermare il riempimento basta il contorno
 
 
@@ -27,14 +35,44 @@ TOLLERANZA = 999        # il colore non vincola: a fermare il riempimento basta 
 # seguendo il bordo vero del soggetto, misurato riga per riga.
 QUOTA_ARRIVO = 0.62     # fin dove cercare il soggetto, in frazione di larghezza
 FILA_MINIMA = 10        # quanti pixel di seguito servono per dire "questa è pelle"
-ROSSO_SU_BLU = 45       # quanto il rosso supera il blu nella pelle e nella barba
-ROSSO_SU_VERDE = 20     # quanto il rosso supera il verde: il legno del mobile non ci arriva
+ROSSO_SU_BLU = 30       # quanto il rosso supera il blu nella pelle e nella barba
+ROSSO_SU_VERDE = 14     # quanto il rosso supera il verde: il legno del mobile non ci arriva
 SOGLIA_TRATTO = 70      # sotto questa luce si è dentro al tratto nero del contorno
 CELLA_CHIUSA = 200      # larghezza massima di una cella chiusa dentro il disegno
 CELLA_FREDDA = 25       # una cella da scavalcare non ha il rosso sopra il blu
+BLU_GIACCA = 8          # di quanto il blu supera il rosso nella giacca scura
 SALTI = 3               # quante celle chiuse di seguito si possono scavalcare
 LISCIO = 40             # mezza finestra della statistica che liscia il bordo
 QUANTILE = 50           # la mediana: regge anche cinquanta righe confuse di seguito
+PUNTE = 40               # mezza finestra che spiana le punte rimaste verso sinistra
+
+
+def chiazze(maschera):
+    """Elenca le zone unite della maschera: (maschera della zona, riquadro)."""
+    h, w = maschera.shape
+    visto = np.zeros((h, w), bool)
+    fuori = []
+    for y0 in range(h):
+        for x0 in range(w):
+            if maschera[y0, x0] and not visto[y0, x0]:
+                q = deque([(y0, x0)]); visto[y0, x0] = True
+                punti = []
+                while q:
+                    y, x = q.popleft(); punti.append((y, x))
+                    for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                        ny, nx = y + dy, x + dx
+                        if 0 <= ny < h and 0 <= nx < w and maschera[ny, nx] and not visto[ny, nx]:
+                            visto[ny, nx] = True; q.append((ny, nx))
+                ys = [p[0] for p in punti]; xs = [p[1] for p in punti]
+                m = np.zeros((h, w), bool)
+                m[ys, xs] = True
+                fuori.append((m, (min(ys), max(ys), min(xs), max(xs))))
+    return fuori
+
+
+def misura(valore, fattore, minimo=1):
+    """Riscala una misura in pixel sulla larghezza vera del disegno."""
+    return max(minimo, int(round(valore * fattore)))
 
 
 def fasce(riga_scura):
@@ -48,7 +86,7 @@ def fasce(riga_scura):
     return out
 
 
-def bordo_del_soggetto(a, lum):
+def bordo_del_soggetto(a, lum, fattore=1.0):
     """Per ogni riga dice dove comincia il soggetto, oppure -1 se non c'è.
 
     Il segno della pelle e della barba è il rosso che supera insieme il blu e
@@ -66,16 +104,22 @@ def bordo_del_soggetto(a, lum):
     h, w, _ = a.shape
     r, g, b = a[:, :, 0], a[:, :, 1], a[:, :, 2]
     pelle = ((r - b) > ROSSO_SU_BLU) & ((r - g) > ROSSO_SU_VERDE)
+    # Sotto la barba il bordo non \u00e8 pelle ma la giacca: scura e tendente al blu.
+    giacca = (lum < SCURO_GIACCA) & ((b - r) > BLU_GIACCA)
+    pelle = pelle | giacca
     scuro = lum < SOGLIA_TRATTO
     arrivo = int(w * QUOTA_ARRIVO)
+    fila_minima = misura(FILA_MINIMA, fattore)
+    cella_chiusa = misura(CELLA_CHIUSA, fattore)
+    liscio_meta = misura(LISCIO, fattore)
     bordo = np.full(h, -1)
     for y in range(h):
         x, fila = -1, 0
         for i in range(arrivo):
             if pelle[y, i]:
                 fila += 1
-                if fila >= FILA_MINIMA:
-                    x = i - FILA_MINIMA + 1
+                if fila >= fila_minima:
+                    x = i - fila_minima + 1
                     break
             else:
                 fila = 0
@@ -94,7 +138,7 @@ def bordo_del_soggetto(a, lum):
                 break
             p, q, _s = fs[i - 1]
             freddo = int(np.mean(r[y, p:q + 1]) - np.mean(b[y, p:q + 1])) < CELLA_FREDDA
-            if (q - p + 1) <= CELLA_CHIUSA and freddo and i - 2 >= 0:
+            if (q - p + 1) <= cella_chiusa and freddo and i - 2 >= 0:
                 i -= 2                      # era una cella chiusa: si scavalca
             else:
                 break                       # era lo sfondo: il bordo è questo
@@ -105,18 +149,32 @@ def bordo_del_soggetto(a, lum):
     # lascia un filo di sfondo invece di mangiare un pezzo di disegno.
     liscio = bordo.copy()
     for y in range(h):
-        finestra = [v for v in bordo[max(0, y - LISCIO):y + LISCIO + 1] if v >= 0]
+        finestra = [v for v in bordo[max(0, y - liscio_meta):y + liscio_meta + 1] if v >= 0]
         if finestra and bordo[y] >= 0:
             liscio[y] = int(np.percentile(finestra, QUANTILE))
-    return liscio
+    # Qualche riga isolata scappa ancora a sinistra e lascia un filo di
+    # televisore attaccato: si spiana tenendo, in una finestrella, il valore
+    # pi\u00f9 a destra. Costa un paio di pixel di disegno, toglie le punte.
+    punte = misura(PUNTE, fattore)
+    spianato = liscio.copy()
+    for y in range(h):
+        finestra = [v for v in liscio[max(0, y - punte):y + punte + 1] if v >= 0]
+        if finestra and liscio[y] >= 0:
+            spianato[y] = max(finestra)
+    return spianato
 
 
 def scontorna(entrata, uscita, margine=14):
     im = Image.open(entrata).convert("RGB")
+    fattore = im.width / float(LARGHEZZA_BASE)
+    cornice = misura(CORNICE, fattore)
+    banda = misura(BANDA, fattore)
+    erosione = misura(EROSIONE, fattore, 2)
+    margine = misura(margine, fattore)
     # L'immagine ha una cornice scura tutt'intorno: se non la si toglie,
     # il riempimento non ha da dove partire perché ogni bordo risulta contorno.
-    if CORNICE:
-        im = im.crop((CORNICE, CORNICE, im.width - CORNICE, im.height - CORNICE))
+    if cornice:
+        im = im.crop((cornice, cornice, im.width - cornice, im.height - cornice))
     a = np.asarray(im).astype(np.int16)
     h, w, _ = a.shape
     lum = (0.2126 * a[:, :, 0] + 0.7152 * a[:, :, 1] + 0.0722 * a[:, :, 2])
@@ -155,14 +213,34 @@ def scontorna(entrata, uscita, margine=14):
         for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
             ny, nx = y + dy, x + dx
             if (0 <= ny < h and 0 <= nx < w and not sfondo[ny, nx] and scuro[ny, nx]
-                    and (nx < BANDA or nx >= w - BANDA)):
+                    and (nx < banda or nx >= w - banda)):
                 sfondo[ny, nx] = True
                 coda.append((ny, nx))
+
+    # 1ter. Le parti dello sfondo chiuse dentro il loro contorno (il pannello
+    # di legno, il muretto, il piede del mobile) non le raggiunge nessun
+    # riempimento. Si riconoscono da una cosa sola: arrivano a toccare il
+    # bordo alto, sinistro o destro del quadro, dove il personaggio non va
+    # mai, perch\u00e9 il busto esce soltanto dal bordo basso.
+    orlo = misura(ORLO, fattore)
+    for chiazza in chiazze(~sfondo & ~scuro):
+        y1, y2, x1, x2 = chiazza[1]
+        if not (y1 <= orlo or x1 <= orlo or x2 >= w - 1 - orlo):
+            continue
+        zona = chiazza[0]
+        luce = float(lum[zona].mean())
+        rosso = float(a[:, :, 0][zona].mean())
+        verde = float(a[:, :, 1][zona].mean())
+        blu = float(a[:, :, 2][zona].mean())
+        calda = (rosso - blu) > ROSSO_SU_BLU and (rosso - verde) > ROSSO_SU_VERDE
+        if (calda and luce > PELLE_CHIARA) or luce < SCURO_GIACCA:
+            continue                       # \u00e8 pelle chiara o la giacca scura
+        sfondo[zona] = True
 
     # 2. Taglio a sinistra lungo il bordo vero del soggetto: così televisore e
     # mobile si staccano dal personaggio prima ancora di contare le sagome.
     davanti = ~sfondo
-    bordo = bordo_del_soggetto(a, lum)
+    bordo = bordo_del_soggetto(a, lum, fattore)
     for y in range(h):
         if bordo[y] > 0:
             davanti[y, :bordo[y]] = False
@@ -173,7 +251,7 @@ def scontorna(entrata, uscita, margine=14):
     # tengono ancora attaccato il televisore si spezzano, mentre la figura,
     # che è spessa, resta tutta intera. Alla fine si rigonfia di altrettanto.
     m = Image.fromarray((davanti * 255).astype(np.uint8), "L")
-    m = m.filter(ImageFilter.MinFilter(2 * EROSIONE + 1))
+    m = m.filter(ImageFilter.MinFilter(2 * erosione + 1))
     davanti = np.asarray(m) > 127
     etichette = np.zeros((h, w), np.int32)
     n, migliore, dim_migliore = 0, 0, 0
@@ -192,7 +270,7 @@ def scontorna(entrata, uscita, margine=14):
                     dim_migliore, migliore = dim, n
     soggetto = etichette == migliore
     m = Image.fromarray((soggetto * 255).astype(np.uint8), "L")
-    m = m.filter(ImageFilter.MaxFilter(2 * EROSIONE + 1))
+    m = m.filter(ImageFilter.MaxFilter(2 * erosione + 1))
     soggetto = (np.asarray(m) > 127) & ~sfondo
     print("sagome trovate: %d | personaggio: %d pixel (%.1f%% del quadro)"
           % (n, dim_migliore, 100.0 * dim_migliore / (h * w)))
