@@ -2068,11 +2068,8 @@ CORPO_CONTATTI = """
         <h3><span aria-hidden="true">&#128197;</span> Appuntamento in municipio</h3>
         <p>Il ricevimento avviene su appuntamento, cos&igrave; chi arriva trova qualcuno che ha il tempo di
            ascoltarlo davvero e non cinque minuti fra una riunione e l'altra.</p>
-        <p><strong>Tre modi per fissarlo:</strong></p>
+        <p><strong>Due modi per fissarlo:</strong></p>
         <ul class="elenco-timbri">
-          <li><span class="icona" aria-hidden="true">&#128241;</span>
-            <div><strong>Servizio in rete del Comune.</strong> Dal sito istituzionale, voce
-            &laquo;Prenota un appuntamento&raquo;.</div></li>
           <li><span class="icona" aria-hidden="true">&#128222;</span>
             <div><strong>Centralino del municipio.</strong> Telefono 0434 388611, negli orari di apertura
             degli uffici.</div></li>
@@ -2083,10 +2080,6 @@ CORPO_CONTATTI = """
         <p style="margin-top:14px">Non c'&egrave; un giorno fisso di ricevimento: si concorda di volta in
            volta, cos&igrave; l'orario si adatta a chi lavora e non il contrario. Scrivi e si trova
            il momento.</p>
-        <div class="fila-bottoni">
-          <a class="bottone bottone--giallo" href="https://comune.roveredoinpiano.pn.it/"
-             target="_blank" rel="noopener">Prenota dal sito del Comune</a>
-        </div>
       </div>
 
       <div class="riquadro riquadro--blu">
