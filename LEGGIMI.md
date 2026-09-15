@@ -33,8 +33,14 @@ Ogni scheda ha un indirizzo suo, così si può condividere da sola.
 | `contatti.html` | Recapiti del municipio e della Polizia Locale, appuntamenti |
 
 Più `stile.css`, `sito.js`, `sigillo.svg`, `ritratto.jpg`, `anteprima.png`,
-`costruisci.py` e i file di servizio `CNAME`, `robots.txt`, `sitemap.xml`,
-`.nojekyll`.
+`inter.woff2`, `oswald.woff2`, `costruisci.py` e i file di servizio `CNAME`,
+`robots.txt`, `sitemap.xml`, `.nojekyll`.
+
+I due caratteri stanno nel repository e non su un sito di terzi: aprendo una
+pagina il navigatore non contatta nessun indirizzo fuori da ginopizza.it, e di
+chi legge non resta traccia da nessuna parte. Sono Inter e Oswald, caratteri
+variabili (un file solo per tutti i pesi), distribuiti con la SIL Open Font
+License 1.1.
 
 `ritratto.jpg` è il disegno intero, con il televisore e il mobile alle spalle,
 in apertura della prima pagina: sta dentro una cornice nera spessa con l'ombra
@@ -152,5 +158,7 @@ Non sono buchi: sono scelte. Il lettore viene mandato alla fonte istituzionale.
 - Nessuno scorrimento orizzontale a 1280 pixel né a 390 pixel.
 - Tutte le immagini si caricano e nessuna resta schiacciata sotto i 40 pixel.
 - Nessun testo dello stesso colore del proprio sfondo.
+- Nessuna richiesta fuori da ginopizza.it, nessun cookie, nessuna memoria locale:
+  verificato con il navigatore su una pagina completa.
 - Tendina, cassetto per telefono, copia negli appunti con avviso a comparsa, condivisione e
   tasto di stampa: tutti provati e funzionanti.

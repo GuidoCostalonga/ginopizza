@@ -176,6 +176,7 @@ CHIUSURA = """<footer class="chiusura">
         <h4>Altrove</h4>
         <ul>
           <li><a href="contatti.html">Ricevimento e contatti</a></li>
+          <li><a href="contatti.html#privacy">Cookie e dati: nessuno</a></li>
           <li><a href="https://costalonga.org" target="_blank" rel="noopener">costalonga.org</a></li>
           <li><a href="https://costalonga.org/truffe/" target="_blank" rel="noopener">Vademecum truffe</a></li>
           <li><a href="https://wa.me/393283692227" target="_blank" rel="noopener">Scrivimi su WhatsApp</a></li>
@@ -202,6 +203,9 @@ def pagina(file_html, titolo_scheda, descrizione, corpo, emoji_og="\U0001F355"):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>/* Chi arriva in chiaro viene portato subito sulla versione cifrata. */
+if(location.protocol==='http:'&&/(^|\.)ginopizza\.it$/.test(location.hostname)){{
+location.replace('https://'+location.host+location.pathname+location.search+location.hash);}}</script>
 <title>{ts}</title>
 <meta name="description" content="{d}">
 <meta name="author" content="Guido Costalonga">
@@ -222,9 +226,6 @@ def pagina(file_html, titolo_scheda, descrizione, corpo, emoji_og="\U0001F355"):
 <meta name="twitter:description" content="{d}">
 <meta name="twitter:image" content="{s}/anteprima.png">
 <link rel="icon" href="sigillo.svg{vsvg}" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="stile.css{vcss}">
 </head>
 <body>
@@ -2203,6 +2204,37 @@ CORPO_CONTATTI = """
           <div><a href="https://costalonga.org/meteo/" target="_blank" rel="noopener">Meteo Friuli Venezia
           Giulia</a>: previsioni per tutti i Comuni della regione.</div></li>
       </ul>
+    </div>
+
+    <div class="riquadro riquadro--nero" id="privacy">
+      <h3><span aria-hidden="true">&#128274;</span> Chi naviga qui non lascia traccia</h3>
+      <p>Questo sito &egrave; fatto di pagine ferme: nessun programma gira dietro le quinte, non c'&egrave;
+         nessun archivio e non c'&egrave; niente da riempire. In concreto:</p>
+      <ul class="elenco-timbri">
+        <li><span class="icona" aria-hidden="true">&#127850;</span>
+          <div><strong>Nessun cookie.</strong> Non ne viene scritto nemmeno uno, n&eacute; tecnico
+          n&eacute; di altro tipo. Per questo non c'&egrave; nessuna finestra che chiede il consenso:
+          non c'&egrave; niente da consentire.</div></li>
+        <li><span class="icona" aria-hidden="true">&#128202;</span>
+          <div><strong>Nessuna statistica, nessun tracciamento.</strong> Niente Google Analytics,
+          niente pixel delle reti sociali, niente pubblicit&agrave;, niente profilazione.</div></li>
+        <li><span class="icona" aria-hidden="true">&#9997;</span>
+          <div><strong>Nessun modulo da compilare.</strong> Non viene chiesto un indirizzo di posta,
+          un numero di telefono o un nome: non c'&egrave; nessuna casella in cui scriverli.</div></li>
+        <li><span class="icona" aria-hidden="true">&#127760;</span>
+          <div><strong>Niente che arrivi da altri siti.</strong> Caratteri, immagini e stile stanno
+          tutti qui dentro: aprendo una pagina il navigatore non contatta nessun altro indirizzo,
+          quindi nessuno pu&ograve; vedere che cosa si sta leggendo.</div></li>
+        <li><span class="icona" aria-hidden="true">&#128273;</span>
+          <div><strong>Collegamento cifrato.</strong> Le pagine viaggiano cifrate, con certificato
+          Let's Encrypt, e l'indirizzo comincia sempre con <strong>https</strong>.</div></li>
+      </ul>
+      <p style="margin-top:14px"><strong>L'unica cosa che resta registrata non dipende da questo sito:</strong>
+         il servizio che lo ospita, GitHub Pages, tiene per un tempo limitato i registri tecnici delle
+         connessioni, come fa qualunque server del mondo per funzionare e per difendersi dagli attacchi.
+         Sono dati che l'assessore non riceve, non vede e non pu&ograve; usare.</p>
+      <p>Se apri un collegamento verso l'esterno, per esempio il sito del Comune o WhatsApp, da quel
+         momento in poi valgono le regole di quel sito, non pi&ugrave; queste.</p>
     </div>
   </div>
 </section>
