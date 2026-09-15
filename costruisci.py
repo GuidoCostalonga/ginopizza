@@ -213,11 +213,14 @@ def pagina(file_html, titolo_scheda, descrizione, corpo, emoji_og="\U0001F355"):
 <meta property="og:title" content="{ts}">
 <meta property="og:description" content="{d}">
 <meta property="og:url" content="{u}">
-<meta property="og:image" content="{s}/sigillo.svg">
+<meta property="og:image" content="{s}/anteprima.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="GinoPizza.it: s&igrave;, il sito &egrave; ginopizza.it. No, non &egrave; una pizzeria.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{ts}">
 <meta name="twitter:description" content="{d}">
-<meta name="twitter:image" content="{s}/sigillo.svg">
+<meta name="twitter:image" content="{s}/anteprima.png">
 <link rel="icon" href="sigillo.svg{vsvg}" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -256,10 +259,14 @@ CORPO_INDEX = """
 """ + nastro("nastro--blu") + """
 <section class="sezione">
   <div class="contenitore">
-    <div class="annuncio obliquo">
-      <h1>S&igrave;, il sito &egrave; ginopizza.it.<br>No, non &egrave; una pizzeria.</h1>
-      <p>Qui non si sforna niente. Si firmano atti, si fissano date e si risponde di quello che si &egrave;
-         fatto. La pizza la fanno meglio in paese: qui si fa il resto.</p>
+    <div class="annuncio annuncio--ritratto obliquo">
+      <div class="annuncio__testo">
+        <h1>S&igrave;, il sito &egrave; ginopizza.it.<br>No, non &egrave; una pizzeria.</h1>
+        <p>Qui non si sforna niente. Si firmano atti, si fissano date e si risponde di quello che si &egrave;
+           fatto. La pizza la fanno meglio in paese: qui si fa il resto.</p>
+      </div>
+      <img class="ritratto" src="ritratto.png""" + impronta("ritratto.png") + """" width="760" height="838"
+           alt="Ritratto a fumetto di Guido Costalonga: testa pelata, barba, occhiali dalla montatura spessa, giacca blu con la coccarda tricolore.">
     </div>
 
     <div style="text-align:center;margin:-14px 0 34px">

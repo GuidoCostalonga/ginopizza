@@ -32,8 +32,16 @@ Ogni scheda ha un indirizzo suo, così si può condividere da sola.
 | `controlli-velocita.html` | I rilevatori di velocità tornati in funzione |
 | `contatti.html` | Recapiti del municipio e della Polizia Locale, appuntamenti |
 
-Più `stile.css`, `sito.js`, `sigillo.svg`, `costruisci.py` e i file di servizio
-`CNAME`, `robots.txt`, `sitemap.xml`, `.nojekyll`.
+Più `stile.css`, `sito.js`, `sigillo.svg`, `ritratto.png`, `anteprima.png`,
+`costruisci.py`, `scontorna.py` e i file di servizio `CNAME`, `robots.txt`,
+`sitemap.xml`, `.nojekyll`.
+
+`ritratto.png` è il ritratto a fumetto senza sfondo, in apertura della prima
+pagina. Lo produce `scontorna.py` dal disegno originale: riempie lo sfondo
+partendo dai bordi, si ferma sul contorno nero, tiene la sagoma più grande e
+infine taglia il televisore e il mobile, che il disegno attacca al soggetto
+con lo stesso tratto della testa. `anteprima.png` è la scheda 1200 per 630
+che compare quando un collegamento del sito viene condiviso.
 
 Le schede figlie hanno le briciole di navigazione in alto (Home, indice, scheda)
 e il tasto di ritorno all'indice in fondo. Il registro `NOMI` dentro `costruisci.py`
@@ -140,9 +148,11 @@ Non sono buchi: sono scelte. Il lettore viene mandato alla fonte istituzionale.
 
 ## Verifiche eseguite
 
-- Struttura HTML di tutte e sei le pagine: nessun tag non chiuso.
+- Struttura HTML di tutte e quattordici le pagine: nessun tag non chiuso.
 - Tutti i collegamenti relativi puntano a file esistenti.
 - Nessun errore JavaScript in console su nessuna pagina.
 - Nessuno scorrimento orizzontale a 1280 pixel né a 390 pixel.
+- Tutte le immagini si caricano e nessuna resta schiacciata sotto i 40 pixel.
+- Nessun testo dello stesso colore del proprio sfondo.
 - Tendina, cassetto per telefono, copia negli appunti con avviso a comparsa, condivisione e
   tasto di stampa: tutti provati e funzionanti.
